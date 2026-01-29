@@ -1,4 +1,4 @@
-# CreeperConfettiPro: A Creeper Confetti Effect Plugin Adapted for High-Version Minecraft Servers
+# CreeperConfettiPro: an unofficial fork of CreeperConfetti for high-version servers
 ![CreeperConfettiPro](https://cdn.modrinth.com/data/cached_images/5b949dc2e24db1e4abd05c1bd5e885436f567614.gif)
 
 As a Minecraft server administrator, have you ever regretted that the classic CreeperConfetti plugin fails to run properly on high-version servers? Do you want Creepers' explosions in 1.20+ and even 1.21+ servers to no longer be monotonous destruction but full-screen colorful particle effects? CreeperConfettiPro — a professional upgraded branch of the CreeperConfetti plugin, tailored for high-version Minecraft servers, letting classic fun adapt to the new era!
@@ -51,13 +51,13 @@ CreeperConfettiPro does not remove any classic functions of the original version
 ## Where can we get CreeperConfettiPro?
 [![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/github_vector.svg)](https://github.com/Hi-PolarBear/CreeperConfettiPro)[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/plugin/creeperconfettipro)[![hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/hangar_vector.svg)](https://hangar.papermc.io/Hi-PolarBear/CreeperConfettiPro)  
 
-## Official Plugin Source Address
+### This plugin is an unofficial fork of CreeperConfetti. Do not report issues of this plugin to the official CreeperConfetti team; instead, submit them to the official repository of CreeperConfettiPro.
+### Official address of the original CreeperConfetti plugin
 
 <details>
-<summary>Source Address</summary>
+<summary>Official Address of the Original Version</summary>
 
 https://www.spigotmc.org/resources/creeperconfetti.85204/
 
 </details>
-
 
