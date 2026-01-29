@@ -1,7 +1,7 @@
 # CreeperConfettiPro: A Creeper Confetti Effect Plugin Adapted for High-Version Minecraft Servers
 ![CreeperConfettiPro](https://cdn.modrinth.com/data/cached_images/5b949dc2e24db1e4abd05c1bd5e885436f567614.gif)
 
-As a Minecraft server administrator, have you ever regretted that the classic CreeperConfetti plugin fails to run properly on high-version servers? Do you want Creepers' explosions in 1.18+, 1.19+ and even 1.20+ servers to no longer be monotonous destruction but full-screen colorful particle effects? CreeperConfettiPro — a professional upgraded branch of the CreeperConfetti plugin, tailored for high-version Minecraft servers, letting classic fun adapt to the new era!
+As a Minecraft server administrator, have you ever regretted that the classic CreeperConfetti plugin fails to run properly on high-version servers? Do you want Creepers' explosions in 1.20+ and even 1.21+ servers to no longer be monotonous destruction but full-screen colorful particle effects? CreeperConfettiPro — a professional upgraded branch of the CreeperConfetti plugin, tailored for high-version Minecraft servers, letting classic fun adapt to the new era!
 
 ## Where can I use CreeperConfettiPro?
 
