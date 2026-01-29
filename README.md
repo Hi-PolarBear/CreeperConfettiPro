@@ -8,19 +8,17 @@ As a Minecraft server administrator, have you ever regretted that the classic Cr
 <img src="https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fbukkit_vector.svg&n=-1" alt="bukkit"> <img src="https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fspigot_vector.svg&n=-1" alt="spigot"> <img src="https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fpaper_vector.svg&n=-1" alt="paper"> <img src="https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fpurpur_vector.svg&n=-1" alt="purpur"></p>
 
 ## I. Core Positioning of the Plugin
-CreeperConfettiPro is the official upgraded branch of the original CreeperConfetti plugin, with its core goal to **fully adapt to high-version Minecraft servers**. On the basis of completely retaining the fun functions of the original plugin, it resolves compatibility issues (such as malfunction, server crashes, unresponsive commands, etc.) of the original plugin in version 1.18 and above, enabling high-version servers to also enjoy the colorful explosion effects of Creepers.
+CreeperConfettiPro is the official upgraded branch of the original CreeperConfetti plugin, with its core goal to **fully adapt to high-version Minecraft servers**. On the basis of completely retaining the fun functions of the original plugin, it resolves compatibility issues (such as malfunction, server crashes, unresponsive commands, etc.) of the original plugin in version 1.20 and above, enabling high-version servers to also enjoy the colorful explosion effects of Creepers.
 
 ## II. Core Feature Highlights
 ### 1. Full-Dimension High-Version Adaptation (Core Advantage of Pro Version)
-- **Version Coverage**: Perfectly supports all mainstream high-version Minecraft servers from 1.20 to 1.21.1, compatible with mainstream server cores including Paper, Spigot and Purpur;
+- **Version Coverage**: Perfectly supports all mainstream high-version Minecraft servers from 1.20 to 1.21+, compatible with mainstream server cores including Paper, Spigot and Purpur;
 - **API Adaptation**: Core code rebuilt based on high-version Bukkit/Spigot API, abandoning outdated API calling methods to eliminate plugin errors caused by API version incompatibility.
 
 ### 2. Retain All Fun Functions of the Original Version
 CreeperConfettiPro does not remove any classic functions of the original version, allowing you to enjoy the same fun in high versions:
 - **Creeper Explosion Effect**: Automatically generate colorful confetti particle effects when Creepers explode, replacing monotonous explosion particles for a more joyful visual experience;
 - **Customizable Effect Parameters**: Modify particle color, density, flight speed and duration via configuration file to customize effects according to server style;
-- **Permission Control**: Control whether players can trigger effects through the permission node (`creeperconfetti.use`), and globally enable or disable the effect function;
-- **Compatibility Mode**: Support effect adaptation for special Creeper types such as Charged Creepers and modded Creepers (needs to be enabled in configuration file).
 
 ## III. Installation & Usage (User-Friendly for Beginners)
 ### Installation Steps
@@ -45,7 +43,7 @@ CreeperConfettiPro does not remove any classic functions of the original version
 
 ## Summary
 ### Key Points Recap
-1. CreeperConfettiPro is an upgraded branch of CreeperConfetti, with core value of **adapting to high-version Minecraft servers from 1.20 to 1.21.1**;
+1. CreeperConfettiPro is an upgraded branch of CreeperConfetti, with core value of **adapting to high-version Minecraft servers from 1.20 to 1.21+**;
 2. Retain all fun functions of the original version (Creeper explosion confetti effect, customizable parameters, permission control, etc.).
 
 ## Where can we get CreeperConfettiPro?
