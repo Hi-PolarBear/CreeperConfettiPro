@@ -1,5 +1,6 @@
 # CreeperConfettiPro: A Creeper Confetti Effect Plugin Adapted for High-Version Minecraft Servers
-![CreeperConfettiPro's Logo](https://proxy.spigotmc.org/643e72d0b20e6698ade777b439764206299c1abf/68747470733a2f2f696d6775722e636f6d2f416f55376f536e2e676966)
+![CreeperConfettiPro](https://cdn.modrinth.com/data/cached_images/5b949dc2e24db1e4abd05c1bd5e885436f567614.gif)
+
 As a Minecraft server administrator, have you ever regretted that the classic CreeperConfetti plugin fails to run properly on high-version servers? Do you want Creepers' explosions in 1.18+, 1.19+ and even 1.20+ servers to no longer be monotonous destruction but full-screen colorful particle effects? CreeperConfettiPro — a professional upgraded branch of the CreeperConfetti plugin, tailored for high-version Minecraft servers, letting classic fun adapt to the new era!
 
 ## Where can I use CreeperConfettiPro?
@@ -48,4 +49,4 @@ CreeperConfettiPro does not remove any classic functions of the original version
 2. Retain all fun functions of the original version (Creeper explosion confetti effect, customizable parameters, permission control, etc.).
 
 ## Where can we get CreeperConfettiPro?
-[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/github_vector.svg)](https://github.com/Hi-PolarBear/CreeperConfettiPro)[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/plugin/worldtag)[![hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/hangar_vector.svg)](https://hangar.papermc.io/Hi-PolarBear/WorldTag)   
+[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/github_vector.svg)](https://github.com/Hi-PolarBear/CreeperConfettiPro)[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/plugin/creeperconfettipro)[![hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/hangar_vector.svg)](https://hangar.papermc.io/Hi-PolarBear/CreeperConfettiPro)  
