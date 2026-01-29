@@ -1,0 +1,16 @@
+main: creeperconfetti.CreeperConfetti
+name: CreeperConfettiPro
+author: Nice_Cam_
+version: 1.6
+api-version: 1.21
+
+commands:
+  creeperconfetti:
+    description: CreeperConfetti command
+    usage: /<command>
+    permissions: creeperconfetti.command
+
+permissions:
+  creeperconfetti.command:
+    description: CreeperConfetti command
+    default: op

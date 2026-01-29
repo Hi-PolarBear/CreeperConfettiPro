@@ -1,0 +1,26 @@
+# 爬行者变成彩纸爬行者的概率百分比
+confetti_chance: 100
+
+confetti_effect:
+  # 烟花效果配置
+  - ==: Firework
+    # 是否闪烁
+    flicker: true
+    # 是否有轨迹
+    trail: false
+    # 颜色列表
+    colors:
+      - ==: Color
+        ALPHA: 255
+        RED: 255
+        BLUE: 0
+        GREEN: 0
+      - ==: Color
+        ALPHA: 255
+        RED: 255
+        BLUE: 0
+        GREEN: 255
+    # 渐变颜色列表
+    fade-colors: []
+    # 烟花类型 (BALL-球形)
+    type: BALL
