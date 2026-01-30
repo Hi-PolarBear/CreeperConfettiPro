@@ -1,12 +1,11 @@
-
 package creeperconfetti.events;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-import creeperconfetti.CreeperConfetti;
-import org.bukkit.Bukkit;
+import creeperconfetti.CreeperConfettiPro;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -17,34 +16,55 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 public class CreeperExplodeListener implements Listener {
+
+    private static final String CONFETTI_CHANCE_CONFIG = "confetti_chance";
+    private static final String CONFETTI_EFFECTS_CONFIG = "confetti_effect";
+
     @EventHandler
     public void onCreeperExplode(EntityExplodeEvent event) {
-        double random = ThreadLocalRandom.current().nextDouble() * 100.0D;
 
-        if (random >= CreeperConfetti.getInstance().getConfig().getDouble("confetti_chance")) {
+        if (!event.getEntityType().equals(EntityType.CREEPER)) {
             return;
         }
-        if (event.getEntityType().equals(EntityType.CREEPER)) {
-            event.setCancelled(true);
 
-            Creeper creeper = (Creeper)event.getEntity();
-            Location location = creeper.getLocation();
-            location = location.add(new Vector(0, 1, 0));
 
-            Firework firework = (Firework)creeper.getWorld().spawnEntity(location, EntityType.FIREWORK_ROCKET);
+        double random = ThreadLocalRandom.current().nextDouble() * 100.0D;
+        double chance = CreeperConfettiPro.getInstance().getConfig().getDouble(CONFETTI_CHANCE_CONFIG);
 
-            FireworkMeta fireworkMeta = firework.getFireworkMeta();
-            fireworkMeta.addEffects((List)CreeperConfetti.getInstance().getConfig().get("confetti_effect"));
-            fireworkMeta.setPower(0);
-            firework.setFireworkMeta(fireworkMeta);
-
-            location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 2.0F, 1.0F);
-
-            Objects.requireNonNull(firework); Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin)CreeperConfetti.getInstance(), firework::detonate, 1L);
+        if (random >= chance) {
+            return;
         }
+
+        event.setCancelled(true);
+
+        Creeper creeper = (Creeper) event.getEntity();
+        Location location = creeper.getLocation().add(new Vector(0, 1, 0));
+
+
+        Firework firework = (Firework) creeper.getWorld().spawnEntity(location, EntityType.FIREWORK_ROCKET);
+
+        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        List<?> effects = (List<?>) CreeperConfettiPro.getInstance().getConfig().get(CONFETTI_EFFECTS_CONFIG);
+        if (effects != null && !effects.isEmpty()) {
+            List<FireworkEffect> fireworkEffects = new ArrayList<>();
+            for (Object effect : effects) {
+                if (effect instanceof FireworkEffect) {
+                    fireworkEffects.add((FireworkEffect) effect);
+                }
+            }
+            fireworkMeta.addEffects(fireworkEffects);
+        }
+        fireworkMeta.setPower(0);
+        firework.setFireworkMeta(fireworkMeta);
+
+
+        location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 2.0F, 1.0F);
+
+
+        CreeperConfettiPro.getInstance().getServer().getScheduler()
+                .runTaskLater(CreeperConfettiPro.getInstance(), firework::detonate, 1L);
     }
 }

@@ -1,6 +1,3 @@
 creeperconfetti\commands\CreeperConfettiCommand.class
 creeperconfetti\events\CreeperExplodeListener.class
-creeperconfetti\metrics\MetricsLite$1.class
-creeperconfetti\CreeperConfetti.class
-creeperconfetti\metrics\MetricsLite.class
-creeperconfetti\commands\CreeperConfettiCommand$1.class
+creeperconfetti\CreeperConfettiPro.class
