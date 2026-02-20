@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import creeperconfetti.CreeperConfettiPro;
+import creeperconfetti.CreeperConfettiPro ;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
@@ -12,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -92,22 +91,19 @@ public class CreeperConfettiCommand implements TabExecutor {
     showFireworkEffect(player);
   }
 
+
   private void showFireworkEffect(Player player) {
-    Firework firework = (Firework) player.getWorld().spawnEntity(
-            player.getLocation().add(0, 1, 0),
-            EntityType.FIREWORK_ROCKET
-    );
+
+    Firework firework = player.getWorld().spawn(player.getLocation().add(0, 1, 0), Firework.class);
 
     FireworkMeta showcaseFireworkMeta = firework.getFireworkMeta();
     @SuppressWarnings("unchecked")
     List<FireworkEffect> effects = (List<FireworkEffect>) CreeperConfettiPro.getInstance()
             .getConfig().get("confetti_effect");
 
-
     if (effects != null && !effects.isEmpty()) {
       showcaseFireworkMeta.addEffects(effects);
     } else {
-
       showcaseFireworkMeta.addEffects(DEFAULT_CONFETTI_EFFECT);
     }
 

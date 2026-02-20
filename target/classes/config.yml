@@ -1,14 +1,14 @@
-# 爬行者变成彩纸爬行者的概率百分比
+# 爬行者变成彩纸爬行者的概率百分比 / Probability percentage for creeper to become confetti creeper
 confetti_chance: 100
 
 confetti_effect:
-  # 烟花效果配置
+  # 烟花效果配置 / Firework effect configuration
   - ==: Firework
-    # 是否闪烁
+    # 是否闪烁 / Whether to flicker
     flicker: true
-    # 是否有轨迹
+    # 是否有轨迹 / Whether there is a trail
     trail: false
-    # 颜色列表
+    # 颜色列表 / Color list
     colors:
       - ==: Color
         ALPHA: 255
@@ -20,7 +20,7 @@ confetti_effect:
         RED: 255
         BLUE: 0
         GREEN: 255
-    # 渐变颜色列表
+    # 渐变颜色列表 / Fade color list
     fade-colors: []
-    # 烟花类型 (BALL-球形)
+    # 烟花类型 (BALL-球形) / Firework type (BALL - spherical)
     type: BALL

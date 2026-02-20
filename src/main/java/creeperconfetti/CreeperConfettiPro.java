@@ -2,8 +2,8 @@
 package creeperconfetti;
 
 
-import creeperconfetti.commands.CreeperConfettiCommand;
-import creeperconfetti.events.CreeperExplodeListener;
+import creeperconfetti.commands.CreeperConfettiCommand  ;
+import creeperconfetti.events.CreeperExplodeListener  ;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
