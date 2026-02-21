@@ -1,7 +1,7 @@
 main: creeperconfetti.CreeperConfettiPro
 name: CreeperConfettiPro
 author: Nice_Cam_
-version: 1.8-bukkit
+version: 1.9-bukkit
 api-version: 1.21
 
 commands:
