@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import creeperconfetti.CreeperConfettiPro ;
+import creeperconfetti.CreeperConfettiPro;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -23,10 +23,8 @@ public class CreeperExplodeListener implements Listener {
     private static final String CONFETTI_CHANCE_CONFIG = "confetti_chance";
     private static final String CONFETTI_EFFECTS_CONFIG = "confetti_effect";
 
-
     @EventHandler
     public void onCreeperExplode(EntityExplodeEvent event) {
-
         if (!event.getEntityType().equals(EntityType.CREEPER)) {
             return;
         }
@@ -42,7 +40,6 @@ public class CreeperExplodeListener implements Listener {
 
         Creeper creeper = (Creeper) event.getEntity();
         Location location = creeper.getLocation().add(new Vector(0, 1, 0));
-
 
         Firework firework = creeper.getWorld().spawn(location, Firework.class);
 

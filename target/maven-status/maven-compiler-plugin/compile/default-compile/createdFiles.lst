@@ -1,4 +1,5 @@
 creeperconfetti\MetricsHelper.class
 creeperconfetti\commands\CreeperConfettiCommand.class
 creeperconfetti\events\CreeperExplodeListener.class
+creeperconfetti\LanguageManager.class
 creeperconfetti\CreeperConfettiPro.class
