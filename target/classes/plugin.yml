@@ -1,16 +1,17 @@
 main: creeperconfetti.CreeperConfettiPro
 name: CreeperConfettiPro
 author: Nice_Cam_
-version: 2.0-bukkit
+version: 2.1-bukkit
 api-version: 1.21
 
 commands:
   creeperconfetti:
-    description: CreeperConfetti command
-    usage: /<command>
-    permissions: creeperconfetti.command
+    description: CreeperConfettiPro 主命令 / Main command for CreeperConfettiPro
+    usage: /creeperconfetti <reload | reseteffect | seteffect | reloadlanguage | setlanguage | language>
+    permission: creeperconfetti.command
+    aliases: [cc, confetti]
 
 permissions:
   creeperconfetti.command:
-    description: CreeperConfetti command
+    description: 允许使用 CreeperConfettiPro 命令 / Allows using CreeperConfettiPro commands
     default: op

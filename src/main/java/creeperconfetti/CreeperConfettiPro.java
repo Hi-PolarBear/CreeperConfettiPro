@@ -10,13 +10,14 @@ import java.util.Objects;
 public class CreeperConfettiPro extends JavaPlugin {
     private LanguageManager languageManager;
     private boolean javaVersionChecked = false;
-    
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
         instance = this;
-        
+
         languageManager = LanguageManager.getInstance();
+        languageManager.setPlugin(this); // 传递插件实例
         languageManager.initialize(this::onLanguageInitialized);
 
         checkJavaVersion();
@@ -25,7 +26,7 @@ public class CreeperConfettiPro extends JavaPlugin {
     private void checkJavaVersion() {
         String javaVersion = System.getProperty("java.version");
         if (!isJava14OrAbove(javaVersion)) {
-            getLogger().severe(ChatColor.RED + "❌ 检测到Java版本低于14，插件将自动禁用！");
+            getLogger().severe(ChatColor.RED + "❌ 检测到服务器Java版本低于14，插件将自动禁用！");
             getLogger().severe(ChatColor.RED + "服务器当前Java版本: " + javaVersion);
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -46,8 +47,8 @@ public class CreeperConfettiPro extends JavaPlugin {
         getLogger().info(ChatColor.LIGHT_PURPLE + languageManager.getMessage("plugin.java_version") + System.getProperty("java.version"));
         getLogger().info(ChatColor.GOLD + "----------------------------------------");
 
-        getServer().getPluginManager().registerEvents(new CreeperExplodeListener(), this);
-        Objects.requireNonNull(getCommand("creeperconfetti")).setExecutor(new CreeperConfettiCommand());
+        getServer().getPluginManager().registerEvents(new CreeperExplodeListener (), this);
+        Objects.requireNonNull(getCommand("creeperconfetti")).setExecutor(new CreeperConfettiCommand ());
 
         new MetricsHelper(this);
         getLogger().info(ChatColor.BLUE + languageManager.getMessage("plugin.bstats_enabled"));
@@ -57,8 +58,8 @@ public class CreeperConfettiPro extends JavaPlugin {
         getLogger().info(ChatColor.GREEN + languageManager.getMessage("plugin.enabled"));
         getLogger().info(ChatColor.YELLOW + languageManager.getMessage("plugin.thanks"));
         getLogger().info(ChatColor.GOLD + "----------------------------------------");
-        
-        getLogger().info(ChatColor.RESET + "当前插件语言: " + languageManager.getCurrentLanguage());
+
+        getLogger().info(ChatColor.RESET + "当前插件语言: " + languageManager.getCurrentLanguageDisplayName() + " (" + languageManager.getCurrentLanguage() + ")");
     }
 
     @Override
@@ -74,7 +75,7 @@ public class CreeperConfettiPro extends JavaPlugin {
     public static CreeperConfettiPro getInstance() {
         return instance;
     }
-    
+
     public LanguageManager getLanguageManager() {
         return languageManager;
     }
