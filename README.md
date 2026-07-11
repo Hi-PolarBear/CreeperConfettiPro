@@ -47,7 +47,8 @@ CreeperConfettiPro does not remove any classic functions of the original version
 2. Retain all fun functions of the original version (Creeper explosion confetti effect, customizable parameters, permission control, etc.).
 
 ## Where can we get CreeperConfettiPro?
-[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/github_vector.svg)](https://github.com/Hi-PolarBear/CreeperConfettiPro)[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/plugin/creeperconfettipro)[![hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/hangar_vector.svg)](https://hangar.papermc.io/Hi-PolarBear/CreeperConfettiPro)  
+[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/github_vector.svg)](https://github.com/Hi-PolarBear/CreeperConfettiPro)[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/plugin/creeperconfettipro)[![hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/hangar_vector.svg)](https://hangar.papermc.io/Hi-PolarBear/CreeperConfettiPro)
+[![spigot](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/spigot_vector.svg)](https://www.spigotmc.org/resources/creeperconfettipro.133573)
 
 ### This plugin is an unofficial fork of CreeperConfetti. Do not report issues of this plugin to the official CreeperConfetti team; instead, submit them to the official repository of CreeperConfettiPro.
 ### Official address of the original CreeperConfetti plugin
