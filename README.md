@@ -60,3 +60,7 @@ https://www.spigotmc.org/resources/creeperconfetti.85204/
 
 </details>
 
+
+### <a href="https://bstats.org/plugin/bukkit/CreeperConfettiPro/29666" rel="noopener nofollow ugc">Usage Statistics</a></h3>
+<img src="https://bstats.org/signatures/bukkit/CreeperConfettiPro.svg" alt="Usage Statistics Image"></p>
+
