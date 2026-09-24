@@ -1,0 +1,136 @@
+# CreeperConfettiPro Configuration
+# =================================
+
+# 配置文件版本标识（请勿手动修改，升级时用于自动迁移）
+# Configuration version marker (do not change manually, used for auto migration)
+config-version: 2
+
+# 调试模式：开启后会在控制台输出烟花样式列表、概率、GeoIP 探测明细等详细日志
+# Debug mode: when enabled, prints verbose logs (styles, chances, GeoIP details, ...)
+debug: false
+
+# Creeper变成彩纸爬行者的概率百分比 / Probability percentage for creeper to become confetti creeper
+confetti_chance: 100
+
+# 插件语言设置 / Plugin language setting
+# 可选值 / Available values:
+#   auto    - 自动检测服务器地区自动匹配语言 / Auto-detect server region and match language
+#   zh_cn   - 简体中文 / Simplified Chinese
+#   zh_tw   - 繁體中文 / Traditional Chinese
+#   en_us   - English (Default)
+#   ja_jp   - 日本語 / Japanese
+#   ko_kr   - 한국어 / Korean
+#   fr_fr   - Français / French
+#   de_de   - Deutsch / German
+#   es_es   - Español / Spanish
+#   it_it   - Italiano / Italian
+#   pt_pt   - Português / Portuguese
+#   ru_ru   - Русский / Russian
+#   nl_nl   - Nederlands / Dutch
+#   pl_pl   - Polski / Polish
+#   sv_se   - Svenska / Swedish
+#   tr_tr   - Türkçe / Turkish
+#   ar_sa   - العربية / Arabic
+#   hi_in   - हिन्दी / Hindi
+#   th_th   - ไทย / Thai
+# 旧代码 (zh/en/zht...) 仍可使用，会自动转换 / Legacy codes (zh/en/zht...) still work and are converted
+language: auto
+
+# 语言文件说明 / Language File Information:
+# 语言文件位于服务器插件目录下的 languages/ 文件夹中
+# Language files are located in the languages/ folder of the server plugin directory
+# 每个语言都有对应的 .yml 文件，可以自由编辑
+# Each language has a corresponding .yml file that can be freely edited
+# 控制台启动消息为硬编码，无法通过语言文件修改
+# Console startup messages are hardcoded and cannot be changed via language files
+# 颜色代码使用 & 符号 (例如 &a 为绿色, &c 为红色)
+# Color codes use & symbol (e.g., &a for green, &c for red)
+
+# ============================================================
+# 多种烟花样式 / Multiple firework styles
+# ============================================================
+# 这里可以配置任意数量的烟花样式，爬行者爆炸时会【随机选择一种】播放。
+# Configure as many styles as you like. When a creeper explodes a
+# 【random style】 is picked and played.
+#
+# 每个样式包含 / Each style contains:
+#   type          - 烟花形状: BALL / BALL_LARGE / STAR / BURST / CREEPER
+#   flicker       - 是否闪烁 / Whether the effect flickers (true/false)
+#   trail         - 是否带轨迹 / Whether the effect has a trail (true/false)
+#   colors        - 颜色列表 / List of colors (at least one)
+#   fade-colors   - 渐变颜色列表 / Fade colors (optional)
+#
+# 颜色写法 / Color formats (all supported):
+#   - 颜色名称 / Color name:  RED, ORANGE, YELLOW, GREEN, LIME, AQUA, BLUE,
+#                             PURPLE, WHITE, BLACK, GRAY, FUCHSIA, MAROON,
+#                             NAVY, OLIVE, SILVER, TEAL
+#   - 十六进制 / Hex code:     "#FF0000" 或 "#f00"
+#   - RGB 映射 / RGB map:      {RED: 255, GREEN: 0, BLUE: 0}
+#
+# 样式名可自由修改，也可通过指令添加:
+# Style names are free to edit, or add new ones in game:
+#   /cc effect add <name>   (手持烟花右键执行 / hold a firework when running)
+#   /cc effect list         (查看所有样式 / list all styles)
+firework_styles:
+  classic:
+    type: BALL
+    flicker: true
+    trail: false
+    colors:
+      - RED
+      - YELLOW
+      - WHITE
+    fade-colors:
+      - ORANGE
+  starburst:
+    type: STAR
+    flicker: true
+    trail: false
+    colors:
+      - AQUA
+      - WHITE
+      - BLUE
+    fade-colors:
+      - PURPLE
+  rainbow:
+    type: BURST
+    flicker: false
+    trail: true
+    colors:
+      - RED
+      - ORANGE
+      - YELLOW
+      - GREEN
+      - AQUA
+    fade-colors:
+      - WHITE
+  creeper:
+    type: CREEPER
+    flicker: true
+    trail: true
+    colors:
+      - GREEN
+      - LIME
+    fade-colors:
+      - GREEN
+
+# ============================================================
+# 各烟花样式的触发概率 / Per-style trigger chances
+# ============================================================
+# 数值为“权重”，插件会自动补偿，保证所有样式概率之和始终等于 100%。
+# Values are weights; the plugin auto-compensates so the total always equals 100%.
+#
+# 修改方式 / How to change:
+#   - 直接修改下面的数值 / Edit the numbers below
+#   - 或使用指令 / Or use the command:
+#       /cc effect chance <样式名> <百分比>
+#       /cc effect chance        (查看所有样式概率)
+#       /cc effect chance reset  (平均分配)
+#
+# 未列出的样式会自动获得平均值。
+# Styles that are not listed automatically receive the average value.
+firework_chances:
+  classic: 40
+  starburst: 30
+  rainbow: 20
+  creeper: 10
