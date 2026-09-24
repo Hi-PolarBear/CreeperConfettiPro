@@ -1,0 +1,34 @@
+main: creeperconfetti.CreeperConfettiPro
+name: CreeperConfettiPro
+author: Hi_PolarBear
+version: 4.0.0-bukkit
+api-version: 1.13
+
+commands:
+  creeperconfetti:
+    description: CreeperConfettiPro main command
+    usage: /creeperconfetti <help | effect | gui | chance | language | reload>
+    permission: creeperconfetti.command
+    aliases: [cc, confetti]
+
+permissions:
+  creeperconfetti.command:
+    description: Allows using CreeperConfettiPro commands
+    default: op
+    children:
+      creeperconfetti.command.reload: true
+      creeperconfetti.command.effect: true
+      creeperconfetti.command.chance: true
+      creeperconfetti.command.language: true
+  creeperconfetti.command.reload:
+    description: Allows reloading the plugin configuration and firework styles
+    default: op
+  creeperconfetti.command.effect:
+    description: Allows managing firework styles
+    default: op
+  creeperconfetti.command.chance:
+    description: Allows viewing and changing the confetti chance
+    default: op
+  creeperconfetti.command.language:
+    description: Allows managing the plugin language
+    default: op
