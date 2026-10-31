@@ -6,6 +6,10 @@ As a Minecraft server administrator, have you ever been disappointed that the cl
 
 **CreeperConfettiPro** — an upgraded branch of CreeperConfetti, built for high-version servers, bringing the classic fun into the modern era!
 
+## Feel free to join our Discord community server:
+
+[![Discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_vector.svg)](https://discord.gg/DajmZMmEbx)
+
 ## Where can I use CreeperConfettiPro?
 
 ![bukkit](https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fbukkit_vector.svg&n=-1) ![spigot](https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fspigot_vector.svg&n=-1) ![paper](https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fpaper_vector.svg&n=-1) ![purpur](https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Fsupported%2Fpurpur_vector.svg&n=-1)
