@@ -1,0 +1,19 @@
+# Build output
+target/
+
+# IDE
+.idea/
+*.iml
+
+# Maven generated
+dependency-reduced-pom.xml
+
+# Logs
+*.log
+
+# Temp
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
