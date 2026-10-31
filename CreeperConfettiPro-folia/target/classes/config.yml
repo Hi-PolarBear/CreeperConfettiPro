@@ -3,7 +3,7 @@
 
 # 配置文件版本标识（请勿手动修改，升级时用于自动迁移）
 # Configuration version marker (do not change manually, used for auto migration)
-config-version: 2
+config-version: 3
 
 # 调试模式：开启后会在控制台输出烟花样式列表、概率、GeoIP 探测明细等详细日志
 # Debug mode: when enabled, prints verbose logs (styles, chances, GeoIP details, ...)
@@ -11,6 +11,21 @@ debug: false
 
 # Creeper变成彩纸爬行者的概率百分比 / Probability percentage for creeper to become confetti creeper
 confetti_chance: 100
+
+# ============================================================
+# 指令别名 / Command aliases
+# ============================================================
+# 是否注册 /cc 与 /confetti 这两个指令别名。
+# 如果你的服务器上已有其他插件占用了这些指令，关闭对应项即可避免冲突。
+# The plugin registers the /cc and /confetti aliases at runtime. Disable one of
+# them if another plugin on your server already uses that command.
+command-aliases:
+  # 总开关 / Master switch
+  enabled: true
+  # /cc
+  cc: true
+  # /confetti
+  confetti: true
 
 # 插件语言设置 / Plugin language setting
 # 可选值 / Available values:

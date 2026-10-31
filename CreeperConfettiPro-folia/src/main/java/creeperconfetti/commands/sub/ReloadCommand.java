@@ -1,6 +1,7 @@
 package creeperconfetti.commands.sub;
 
 import creeperconfetti.commands.BaseSubCommand;
+import creeperconfetti.util.Schedulers;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -34,6 +35,8 @@ public class ReloadCommand extends BaseSubCommand {
         plugin().reloadCachedSettings();
         plugin().getFireworkStyleManager().load();
         plugin().getLanguageManager().reloadMessages();
+        // Folia: command (un)registration must not happen on a region thread.
+        Schedulers.runGlobal(plugin(), () -> plugin().getCommandAliasManager().sync());
         send(sender, "command.reload_success");
         return true;
     }

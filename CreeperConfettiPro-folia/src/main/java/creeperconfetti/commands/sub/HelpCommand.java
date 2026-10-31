@@ -109,10 +109,11 @@ public class HelpCommand extends BaseSubCommand {
         }
 
         TextComponent line = new TextComponent("");
+        String baseCommand = commandLabel() + " help ";
         line.addExtra(MessageUtil.plain(lang().getMessage("help.separator")));
 
         if (page > 1) {
-            line.addExtra(MessageUtil.component(lang().getMessage("help.prev"), "/cc help " + (page - 1), lang().getMessage("help.prev_hover")));
+            line.addExtra(MessageUtil.component(lang().getMessage("help.prev"), baseCommand + (page - 1), lang().getMessage("help.prev_hover")));
         } else {
             line.addExtra(MessageUtil.plain(lang().getMessage("help.prev_disabled")));
         }
@@ -130,14 +131,14 @@ public class HelpCommand extends BaseSubCommand {
             } else {
                 line.addExtra(MessageUtil.component(
                         MessageUtil.format(lang().getMessage("help.page_button"), number),
-                        "/cc help " + number,
+                        baseCommand + number,
                         MessageUtil.format(lang().getMessage("help.page_hover"), number)));
             }
         }
 
         line.addExtra(MessageUtil.plain(lang().getMessage("help.separator")));
         if (page < totalPages) {
-            line.addExtra(MessageUtil.component(lang().getMessage("help.next"), "/cc help " + (page + 1), lang().getMessage("help.next_hover")));
+            line.addExtra(MessageUtil.component(lang().getMessage("help.next"), baseCommand + (page + 1), lang().getMessage("help.next_hover")));
         } else {
             line.addExtra(MessageUtil.plain(lang().getMessage("help.next_disabled")));
         }

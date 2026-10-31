@@ -6,7 +6,7 @@
 
   <groupId>CreeperConfetti.example</groupId>
   <artifactId>CreeperConfettiPro</artifactId>
-  <version>4.0.0-folia</version>
+  <version>4.1.0-folia</version>
   <packaging>jar</packaging>
 
   <name>CreeperConfettiPro</name>

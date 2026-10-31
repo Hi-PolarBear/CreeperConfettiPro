@@ -1,5 +1,6 @@
 package creeperconfetti;
 
+import creeperconfetti.commands.CommandAliasManager;
 import creeperconfetti.commands.CreeperConfettiCommand;
 import creeperconfetti.effects.FireworkStyleManager;
 import creeperconfetti.events.CreeperExplodeListener;
@@ -12,6 +13,7 @@ import java.util.Objects;
 public class CreeperConfettiPro extends JavaPlugin {
     private LanguageManager languageManager;
     private FireworkStyleManager fireworkStyleManager;
+    private CommandAliasManager commandAliasManager;
 
     // Cached so region threads (Folia) never read the non thread-safe config.
     private volatile double confettiChance = 100.0D;
@@ -50,6 +52,13 @@ public class CreeperConfettiPro extends JavaPlugin {
 
         languageManager = LanguageManager.getInstance();
         languageManager.setPlugin(this);
+
+        // Register the executor before the aliases, so /cc works the moment it exists.
+        Objects.requireNonNull(getCommand("creeperconfetti")).setExecutor(new CreeperConfettiCommand());
+
+        commandAliasManager = new CommandAliasManager(this);
+        commandAliasManager.sync();
+
         languageManager.initialize(this::onLanguageInitialized);
     }
 
@@ -70,7 +79,6 @@ public class CreeperConfettiPro extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new CreeperExplodeListener(this), this);
         getServer().getPluginManager().registerEvents(new GuiListener(), this);
-        Objects.requireNonNull(getCommand("creeperconfetti")).setExecutor(new CreeperConfettiCommand());
 
         try {
             new MetricsHelper(this);
@@ -95,6 +103,10 @@ public class CreeperConfettiPro extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (commandAliasManager != null) {
+            commandAliasManager.unregisterAll();
+        }
+
         String version = getDescription().getVersion();
 
         String border = colorizeConsole(ChatColor.GOLD + "----------------------------------------");
@@ -118,6 +130,10 @@ public class CreeperConfettiPro extends JavaPlugin {
 
     public FireworkStyleManager getFireworkStyleManager() {
         return fireworkStyleManager;
+    }
+
+    public CommandAliasManager getCommandAliasManager() {
+        return commandAliasManager;
     }
 
     /**

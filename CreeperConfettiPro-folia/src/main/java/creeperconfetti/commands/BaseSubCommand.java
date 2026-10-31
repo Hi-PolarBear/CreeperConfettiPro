@@ -22,6 +22,14 @@ public abstract class BaseSubCommand implements SubCommand {
         return plugin().getLanguageManager();
     }
 
+    /**
+     * The label players should type: {@code /cc} when the alias is registered,
+     * otherwise the full command name.
+     */
+    protected String commandLabel() {
+        return lang().getCommandLabel();
+    }
+
     @Override
     public List<String> getAliases() {
         return Collections.emptyList();

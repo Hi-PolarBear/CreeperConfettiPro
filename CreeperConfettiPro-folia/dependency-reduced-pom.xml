@@ -4,7 +4,7 @@
   <groupId>CreeperConfetti.example</groupId>
   <artifactId>CreeperConfettiPro</artifactId>
   <name>CreeperConfettiPro</name>
-  <version>4.0.0-folia</version>
+  <version>4.1.0-folia</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>
@@ -69,7 +69,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>17</java.version>
   </properties>
 </project>

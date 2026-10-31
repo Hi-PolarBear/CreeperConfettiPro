@@ -30,7 +30,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class ConfigMigrator {
 
-    public static final int CURRENT_VERSION = 2;
+    public static final int CURRENT_VERSION = 3;
 
     private static final String VERSION_PATH = "config-version";
     private static final String STYLES_PATH = "firework_styles";

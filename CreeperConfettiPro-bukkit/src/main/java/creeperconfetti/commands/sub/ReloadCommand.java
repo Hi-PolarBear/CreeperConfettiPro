@@ -33,6 +33,7 @@ public class ReloadCommand extends BaseSubCommand {
         plugin().reloadConfig();
         plugin().getFireworkStyleManager().load();
         plugin().getLanguageManager().reloadMessages();
+        plugin().getCommandAliasManager().sync();
         send(sender, "command.reload_success");
         return true;
     }

@@ -1,12 +1,13 @@
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\BaseSubCommand.java
+E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\CommandAliasManager.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\CreeperConfettiCommand.java
+E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\SubCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\sub\ChanceCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\sub\EffectCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\sub\GuiCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\sub\HelpCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\sub\LanguageCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\sub\ReloadCommand.java
-E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\commands\SubCommand.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\ConfigMigrator.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\CreeperConfettiPro.java
 E:\插件\CreeperConfettiPro-bukkit\src\main\java\creeperconfetti\effects\FireworkEffectParser.java

@@ -1,7 +1,7 @@
 main: creeperconfetti.CreeperConfettiPro
 name: CreeperConfettiPro
 author: Hi_PolarBear
-version: 4.0.0-folia
+version: 4.1.0-folia
 api-version: '1.19'
 folia-supported: true
 
@@ -10,7 +10,6 @@ commands:
     description: CreeperConfettiPro main command
     usage: /creeperconfetti <help | effect | gui | chance | language | reload>
     permission: creeperconfetti.command
-    aliases: [cc, confetti]
 
 permissions:
   creeperconfetti.command:

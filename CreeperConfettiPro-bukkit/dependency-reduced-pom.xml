@@ -4,7 +4,7 @@
   <groupId>me.cookie</groupId>
   <artifactId>CreeperConfettiPro</artifactId>
   <name>CreeperConfettiPro</name>
-  <version>4.0.0-bukkit</version>
+  <version>4.1.0-bukkit</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>
@@ -76,7 +76,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <java.version>8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>8</java.version>
   </properties>
 </project>

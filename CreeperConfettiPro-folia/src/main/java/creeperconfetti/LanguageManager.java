@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import creeperconfetti.commands.CommandAliasManager;
 import creeperconfetti.util.GeoIpResolver;
 import creeperconfetti.util.Schedulers;
 
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LanguageManager {
     private static LanguageManager instance;
@@ -32,6 +35,9 @@ public class LanguageManager {
     private static final String LANGUAGE_CONFIG_PATH = "language";
     private static final String LANGUAGES_FOLDER = "languages";
     private static final String DEFAULT_LANGUAGE = "en_us";
+
+    /** Matches the {@code /cc} shorthand used in messages. */
+    private static final Pattern COMMAND_TOKEN = Pattern.compile("/cc(?=[\\s&\\u00a7<]|$)");
 
     private static final Set<String> SUPPORTED_LANGUAGES = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(
             "zh_cn", "zh_tw", "en_us", "ja_jp", "ko_kr", "fr_fr", "de_de", "es_es", "it_it",
@@ -844,11 +850,37 @@ public class LanguageManager {
     public synchronized String getMessage(String key) {
         ensureDefaultMessages();
         String value = messages.get(key);
-        if (value != null) {
-            return value;
+        if (value == null) {
+            value = defaultMessages.get(key);
         }
-        String fallback = defaultMessages.get(key);
-        return fallback != null ? fallback : key;
+        return applyCommandLabel(value != null ? value : key);
+    }
+
+    /**
+     * The command label used in messages: {@code /cc} while that alias is really
+     * registered by this plugin, otherwise the full command name. This keeps the
+     * help text correct when the alias is disabled to avoid conflicts.
+     */
+    public String getCommandLabel() {
+        CreeperConfettiPro pluginInstance = plugin;
+        if (pluginInstance != null) {
+            CommandAliasManager aliases = pluginInstance.getCommandAliasManager();
+            if (aliases != null && aliases.isRegistered("cc")) {
+                return "/cc";
+            }
+        }
+        return "/creeperconfetti";
+    }
+
+    private String applyCommandLabel(String message) {
+        if (message == null || message.indexOf("/cc") < 0) {
+            return message;
+        }
+        String label = getCommandLabel();
+        if ("/cc".equals(label)) {
+            return message;
+        }
+        return COMMAND_TOKEN.matcher(message).replaceAll(Matcher.quoteReplacement(label));
     }
 
     public synchronized String getConsoleMessage(String key) {

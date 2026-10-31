@@ -6,7 +6,7 @@
 
     <groupId>me.cookie</groupId>
     <artifactId>CreeperConfettiPro</artifactId>
-    <version>4.0.0-bukkit</version>
+    <version>4.1.0-bukkit</version>
     <packaging>jar</packaging>
 
     <name>CreeperConfettiPro</name>
