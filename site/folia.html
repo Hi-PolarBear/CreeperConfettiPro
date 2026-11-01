@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bukkit &amp; Folia builds · CreeperConfettiPro</title>
+<meta name="description" content="Why CreeperConfettiPro ships two builds: Folia has no main thread. Code diff, the Schedulers wrapper and the thread-safety strategy.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="folia">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Bukkit &amp; Folia builds</h1>
+      <p class="lead">The two builds are feature-identical. Every difference is about one question: which thread does this task belong to?</p>
+
+      <h2 id="why">Why two builds</h2>
+
+      <p>Folia splits the world into independent regions, each ticked by its own thread. There is <strong>no main thread at all</strong>, and <code>Bukkit.getScheduler()</code> does not exist — not "behaves differently", but the class is absent.</p>
+
+      <p>So every "do this later" has to answer a new question: which region owns it?</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Need</th><th>Bukkit way</th><th>Folia way</th></tr></thead>
+          <tbody>
+            <tr><td>Detonate a firework one tick later</td><td><code>runTaskLater(plugin, task, 1L)</code></td><td>Run delayed on the firework entity's region</td></tr>
+            <tr><td>Open a GUI</td><td><code>runTask(plugin, this::open)</code></td><td>Run on the viewer entity's region</td></tr>
+            <tr><td>Return to the "main" thread after async work</td><td><code>runTask(plugin, ...)</code></td><td>Run on the global region thread</td></tr>
+            <tr><td>Register command aliases</td><td>Touch <code>CommandMap</code> directly</td><td>Hop to the global region thread first</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>On top of that, Folia only loads plugins that declare <code>folia-supported: true</code> in <code>plugin.yml</code>. That alone forces a separate jar.</p>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>The reverse is also true: the Folia build cannot run on plain Paper. It depends on the entity and region schedulers from <code>folia-api</code>, which Paper does not ship.</p>
+      </div>
+
+      <h2 id="diff">Code differences</h2>
+
+      <p>A file-by-file diff comes down to nine places:</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>File</th><th>Difference</th></tr></thead>
+          <tbody>
+            <tr><td><code>util/Schedulers.java</code></td><td><strong>Folia only</strong> — wraps every scheduling entry point; no other class touches a scheduler</td></tr>
+            <tr><td><code>CreeperConfettiPro.java</code></td><td>Adds <code>volatile</code> caches for <code>confettiChance</code> and <code>debugEnabled</code>, plus <code>reloadCachedSettings()</code></td></tr>
+            <tr><td><code>events/CreeperExplodeListener.java</code></td><td>Reads the chance from the cache; detonates through <code>runOnEntityLater</code></td></tr>
+            <tr><td><code>effects/FireworkUtil.java</code></td><td><code>spawnAndDetonate</code> schedules on the firework entity's region</td></tr>
+            <tr><td><code>effects/FireworkStyleManager.java</code></td><td>Every public method is <code>synchronized</code></td></tr>
+            <tr><td><code>LanguageManager.java</code></td><td><code>currentLanguage</code> becomes <code>volatile</code>; message accessors become <code>synchronized</code>; the GeoIP callback uses <code>runGlobal</code></td></tr>
+            <tr><td><code>commands/sub/ReloadCommand.java</code></td><td>Refreshes the caches first, moves alias registration to the global region thread</td></tr>
+            <tr><td><code>gui/BaseGui.java</code></td><td><code>openLater()</code> opens on the viewer's region</td></tr>
+            <tr><td><code>plugin.yml</code></td><td><code>api-version: '1.19'</code> and <code>folia-supported: true</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Nothing else changed. Same config file, same commands, same GUI, same language files — the two builds are interchangeable, and configs can be copied between them.</p>
+
+      <h2 id="schedulers">The scheduler wrapper</h2>
+
+      <p><code>Schedulers</code> is a small static utility that turns "where should this run" into six methods:</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Method</th><th>Runs on</th><th>Typical use</th></tr></thead>
+          <tbody>
+            <tr><td><code>runOnEntity(plugin, entity, task)</code></td><td>The entity's region, next tick</td><td>Opening a GUI, entity work</td></tr>
+            <tr><td><code>runOnEntityLater(plugin, entity, task, delay)</code></td><td>The entity's region, delayed</td><td>Delayed firework detonation</td></tr>
+            <tr><td><code>runAtLocation(plugin, loc, task)</code></td><td>The region owning the location</td><td>Position-based tasks</td></tr>
+            <tr><td><code>runAtLocationLater(plugin, loc, task, delay)</code></td><td>Same, delayed</td><td>Same, with a delay</td></tr>
+            <tr><td><code>runGlobal(plugin, task)</code></td><td>The global region thread</td><td>Command registration, non-region state</td></tr>
+            <tr><td><code>runAsync(plugin, task)</code></td><td>Any async thread</td><td>Network, file IO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The core is a handful of lines, but it handles the Folia traps:</p>
+
+<pre><code>public static void runOnEntity(Plugin plugin, Entity entity, Runnable task) {
+    entity.getScheduler().run(plugin, scheduled -&gt; task.run(), () -&gt; { });
+}
+
+public static void runOnEntityLater(Plugin plugin, Entity entity, Runnable task, long delayTicks) {
+    entity.getScheduler().runDelayed(plugin, scheduled -&gt; task.run(), () -&gt; { },
+            Math.max(1L, delayTicks));   <span class="tok-c">// Folia requires a delay of at least 1 tick</span>
+}
+
+public static void runGlobal(Plugin plugin, Runnable task) {
+    Bukkit.getGlobalRegionScheduler().run(plugin, scheduled -&gt; task.run());
+}</code></pre>
+
+      <ul>
+        <li><code>Math.max(1L, delayTicks)</code> — Folia rejects a delay of 0, so it is clamped to 1;</li>
+        <li>the third argument is the cancellation callback, left empty: the plugin has no delayed tasks to clean up;</li>
+        <li>once an entity is removed its scheduler is invalidated automatically, so there is no "operating on a dead entity" error.</li>
+      </ul>
+
+      <h2 id="thread">Thread-safety strategy</h2>
+
+      <p>Swapping schedulers is not enough. On Folia, players in different regions can trigger explosions simultaneously while an admin edits the config on another thread — shared state needs protection. The plugin uses two mechanisms.</p>
+
+      <h3 id="volatile">1. Volatile caches: a safe snapshot for region threads</h3>
+
+      <p><code>Bukkit.getConfig()</code> returns a <code>FileConfiguration</code> that is not thread-safe. The listener used to read <code>getConfig().getDouble("confetti_chance")</code> directly, which on Folia means several region threads reading a map that may be mid-write.</p>
+
+      <p>The Folia build reads the values into <code>volatile</code> fields on enable and reload; region threads only touch the fields:</p>
+
+<pre><code>private volatile double confettiChance = 100.0D;
+private volatile boolean debugEnabled = false;
+
+public void reloadCachedSettings() {
+    this.confettiChance = getConfig().getDouble("confetti_chance", 100.0D);
+    this.debugEnabled = getConfig().getBoolean("debug", false);
+}</code></pre>
+
+      <p><code>/cc chance</code> and <code>/cc reload</code> both refresh the cache, so changes apply immediately without a restart.</p>
+
+      <h3 id="synchronized">2. synchronized: guarding the collections</h3>
+
+      <p><code>FireworkStyleManager</code> keeps two <code>LinkedHashMap</code>s, and reads (drawing a style) can happen on a different thread than writes (add, remove, chance change). Every public method is <code>synchronized</code> in the Folia build:</p>
+
+<pre><code>public synchronized List&lt;FireworkEffect&gt; getRandomEffects() { ... }
+public synchronized boolean setChance(String name, double value) { ... }
+public synchronized void save() { ... }</code></pre>
+
+      <p>The same applies to <code>LanguageManager</code>: its <code>messages</code> map is rebuilt wholesale on reload, so <code>loadMessages()</code>, <code>getMessage()</code> and <code>getConsoleMessage()</code> are locked, and <code>currentLanguage</code> is <code>volatile</code>.</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>The locks are tiny — one map operation or one string build — never held across methods, and never wrap IO or scheduling. So they cannot cause noticeable stalls on a region thread.</p>
+      </div>
+
+      <h3 id="order">3. Ordering: coming back to the right thread</h3>
+
+      <p>Language detection needs the network, so it must be async; but the result touches Bukkit state, so it must hop back. That is the one place the two builds differ structurally:</p>
+
+<pre><code><span class="tok-c">// Bukkit build</span>
+runTaskAsynchronously(plugin, () -&gt; {
+    String country = resolver.resolve();
+    runTask(plugin, () -&gt; applyCountry(country));
+});
+
+<span class="tok-c">// Folia build</span>
+Schedulers.runAsync(plugin, () -&gt; {
+    String country = resolver.resolve();
+    Schedulers.runGlobal(plugin, () -&gt; applyCountry(country));
+});</code></pre>
+
+      <h2 id="checklist">Porting checklist</h2>
+
+      <p>If you extend this project, or port another plugin to Folia, run through these:</p>
+
+      <ol>
+        <li>Replace every <code>Bukkit.getScheduler()</code> with a region / global / async scheduler;</li>
+        <li>before touching an entity or block, work out which region owns it, then use <code>entity.getScheduler()</code> or <code>getRegionScheduler()</code>;</li>
+        <li>never pass 0 as a delay — one tick minimum;</li>
+        <li>never assume "the current thread is the main thread"; handlers can run on any region thread;</li>
+        <li>shared mutable state needs a lock or a volatile snapshot;</li>
+        <li>add <code>folia-supported: true</code> to <code>plugin.yml</code> and raise <code>api-version</code> to 1.19+;</li>
+        <li>compile for Java 17 and depend on <code>dev.folia:folia-api</code>.</li>
+      </ol>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>Bukkit 与 Folia 双分支</h1>
+      <p class="lead">两个分支功能完全一致，代码差异只集中在「任务跑在哪个线程」这一件事上。理解这点，就能明白为什么不能只发一个 jar。</p>
+
+      <h2 id="why">为什么需要两个分支</h2>
+
+      <p>Folia 把世界切成多个互相独立的区域（region），每个区域由自己的线程按 tick 推进，<strong>根本不存在「主线程」</strong>。<code>Bukkit.getScheduler()</code> 在 Folia 上直接不存在——不是行为不同，而是那个类压根没有。</p>
+
+      <p>于是所有「等一会儿再做」的需求都必须回答一个新问题：这件事属于哪个区域？</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>需求</th><th>Bukkit 写法</th><th>Folia 写法</th></tr></thead>
+          <tbody>
+            <tr><td>延迟 1 tick 引爆烟花</td><td><code>runTaskLater(plugin, task, 1L)</code></td><td>在烟花实体所属区域上延迟执行</td></tr>
+            <tr><td>打开 GUI</td><td><code>runTask(plugin, this::open)</code></td><td>在玩家实体所属区域上执行</td></tr>
+            <tr><td>异步网络请求后回主线程</td><td><code>runTask(plugin, ...)</code></td><td>回到全局区域线程</td></tr>
+            <tr><td>注册指令别名</td><td>直接改 <code>CommandMap</code></td><td>必须先切到全局区域线程</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>另外，Folia 只加载 <code>plugin.yml</code> 里声明了 <code>folia-supported: true</code> 的插件，否则会拒绝启用。这也是 Folia 分支必须单独打包的原因之一。</p>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>反过来，Folia 分支在普通 Paper 上也无法运行：它依赖 <code>folia-api</code> 里的实体调度器与区域调度器，而这些在 Paper 上不存在。</p>
+      </div>
+
+      <h2 id="diff">代码差异对照</h2>
+
+      <p>逐文件对比后，改动集中在九处：</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>文件</th><th>差异</th></tr></thead>
+          <tbody>
+            <tr><td><code>util/Schedulers.java</code></td><td><strong>仅 Folia 分支存在</strong>，封装全部调度入口，其余类不再直接调用调度器</td></tr>
+            <tr><td><code>CreeperConfettiPro.java</code></td><td>新增 <code>volatile</code> 缓存的 <code>confettiChance</code> 与 <code>debugEnabled</code>，提供 <code>reloadCachedSettings()</code></td></tr>
+            <tr><td><code>events/CreeperExplodeListener.java</code></td><td>概率从缓存读取；引爆改用 <code>runOnEntityLater</code></td></tr>
+            <tr><td><code>effects/FireworkUtil.java</code></td><td><code>spawnAndDetonate</code> 改为在烟花实体所属区域延迟引爆</td></tr>
+            <tr><td><code>effects/FireworkStyleManager.java</code></td><td>全部公开方法加 <code>synchronized</code></td></tr>
+            <tr><td><code>LanguageManager.java</code></td><td><code>currentLanguage</code> 改为 <code>volatile</code>；消息读写方法加 <code>synchronized</code>；GeoIP 回调走 <code>runGlobal</code></td></tr>
+            <tr><td><code>commands/sub/ReloadCommand.java</code></td><td>先刷新 volatile 缓存，别名注册丢到全局区域线程</td></tr>
+            <tr><td><code>gui/BaseGui.java</code></td><td><code>openLater()</code> 改为在查看者实体所属区域打开</td></tr>
+            <tr><td><code>plugin.yml</code></td><td><code>api-version: '1.19'</code> + <code>folia-supported: true</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>除此之外，业务逻辑一行没改：同样的配置文件、同样的指令、同样的界面、同样的语言文件，两个分支可以互换使用（配置可以互相拷贝）。</p>
+
+      <h2 id="schedulers">调度器封装</h2>
+
+      <p><code>Schedulers</code> 是一个纯静态工具类，把「在哪里执行」抽象成六个方法：</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>方法</th><th>执行位置</th><th>典型用途</th></tr></thead>
+          <tbody>
+            <tr><td><code>runOnEntity(plugin, entity, task)</code></td><td>实体所属区域，下一 tick</td><td>打开 GUI、操作实体</td></tr>
+            <tr><td><code>runOnEntityLater(plugin, entity, task, delay)</code></td><td>实体所属区域，延迟 N tick</td><td>延迟引爆烟花</td></tr>
+            <tr><td><code>runAtLocation(plugin, loc, task)</code></td><td>坐标所属区域，下一 tick</td><td>按位置判定归属的任务</td></tr>
+            <tr><td><code>runAtLocationLater(plugin, loc, task, delay)</code></td><td>坐标所属区域，延迟 N tick</td><td>同上，带延迟</td></tr>
+            <tr><td><code>runGlobal(plugin, task)</code></td><td>全局区域线程</td><td>注册指令、非区域相关的 Bukkit 状态</td></tr>
+            <tr><td><code>runAsync(plugin, task)</code></td><td>任意异步线程</td><td>网络请求、文件 IO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>核心实现只有几行，但把 Folia 的几个坑都处理掉了：</p>
+
+<pre><code>public static void runOnEntity(Plugin plugin, Entity entity, Runnable task) {
+    entity.getScheduler().run(plugin, scheduled -&gt; task.run(), () -&gt; { });
+}
+
+public static void runOnEntityLater(Plugin plugin, Entity entity, Runnable task, long delayTicks) {
+    entity.getScheduler().runDelayed(plugin, scheduled -&gt; task.run(), () -&gt; { },
+            Math.max(1L, delayTicks));   <span class="tok-c">// Folia 要求延迟至少 1 tick</span>
+}
+
+public static void runGlobal(Plugin plugin, Runnable task) {
+    Bukkit.getGlobalRegionScheduler().run(plugin, scheduled -&gt; task.run());
+}</code></pre>
+
+      <ul>
+        <li><code>Math.max(1L, delayTicks)</code>：Folia 的延迟调度不接受 0，传 0 会抛异常，这里统一兜到 1；</li>
+        <li>第三个参数是取消回调，留空即可——插件没有需要清理的延迟任务；</li>
+        <li>实体被移除后调度器会自动失效，不会出现「对已死实体操作」的报错。</li>
+      </ul>
+
+      <h2 id="thread">线程安全策略</h2>
+
+      <p>光换调度器还不够。Folia 下玩家可能在不同的区域线程上同时触发爆炸，而管理员在另一个线程执行指令改配置——共享状态必须自己保护。这个插件用了两种手段。</p>
+
+      <h3 id="volatile">1. volatile 缓存：给区域线程一个安全快照</h3>
+
+      <p><code>Bukkit.getConfig()</code> 返回的 <code>FileConfiguration</code> 不是线程安全的。原来爆炸监听里直接读 <code>getConfig().getDouble("confetti_chance")</code>，在 Folia 上相当于多个区域线程同时读一个可能正被写入的 Map。</p>
+
+      <p>Folia 分支改为在启用与重载时把值读进 <code>volatile</code> 字段，区域线程只读这个字段：</p>
+
+<pre><code>private volatile double confettiChance = 100.0D;
+private volatile boolean debugEnabled = false;
+
+public void reloadCachedSettings() {
+    this.confettiChance = getConfig().getDouble("confetti_chance", 100.0D);
+    this.debugEnabled = getConfig().getBoolean("debug", false);
+}</code></pre>
+
+      <p><code>/cc chance</code> 与 <code>/cc reload</code> 都会同步更新缓存，因此改完立刻生效，不需要重启。</p>
+
+      <h3 id="synchronized">2. synchronized：给集合操作加锁</h3>
+
+      <p><code>FireworkStyleManager</code> 内部是两个 <code>LinkedHashMap</code>，读取（抽样式）与写入（增删样式、改概率）可能发生在不同线程。Folia 分支给所有公开方法加了 <code>synchronized</code>：</p>
+
+<pre><code>public synchronized List&lt;FireworkEffect&gt; getRandomEffects() { ... }
+public synchronized boolean setChance(String name, double value) { ... }
+public synchronized void save() { ... }</code></pre>
+
+      <p>同理，<code>LanguageManager</code> 的 <code>messages</code> 是 <code>HashMap</code>，重载语言时整个表会被重建，因此 <code>loadMessages()</code>、<code>getMessage()</code>、<code>getConsoleMessage()</code> 都加了锁，<code>currentLanguage</code> 则声明为 <code>volatile</code>。</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>这些锁的粒度都很小（只包住一次 Map 操作或一次字符串拼接），不存在跨方法持锁，也不会在锁内做 IO 或调度，因此不会在区域线程上造成可感知的卡顿。</p>
+      </div>
+
+      <h3 id="order">3. 顺序问题：异步之后必须回到正确的线程</h3>
+
+      <p>语言自动检测需要访问网络，只能在异步线程做；但拿到结果后要改的是 Bukkit 状态，必须切回来。两个分支的区别就在这里：</p>
+
+<pre><code><span class="tok-c">// Bukkit 分支</span>
+runTaskAsynchronously(plugin, () -&gt; {
+    String country = resolver.resolve();
+    runTask(plugin, () -&gt; applyCountry(country));
+});
+
+<span class="tok-c">// Folia 分支</span>
+Schedulers.runAsync(plugin, () -&gt; {
+    String country = resolver.resolve();
+    Schedulers.runGlobal(plugin, () -&gt; applyCountry(country));
+});</code></pre>
+
+      <h2 id="checklist">把插件迁到 Folia 的检查清单</h2>
+
+      <p>如果你要基于这个项目做二次开发，或者把别的插件搬过来，按这几条过一遍基本不会踩坑：</p>
+
+      <ol>
+        <li>把 <code>Bukkit.getScheduler()</code> 全部替换成区域/全局/异步调度器；</li>
+        <li>凡是操作实体或方块，先确定它属于哪个区域，再用 <code>entity.getScheduler()</code> 或 <code>getRegionScheduler()</code>；</li>
+        <li>延迟参数不要传 0，最少 1 tick；</li>
+        <li>不要假设「当前线程就是主线程」，事件处理器可能跑在任意区域线程；</li>
+        <li>共享可变状态要么加锁，要么改成 volatile 快照；</li>
+        <li><code>plugin.yml</code> 加上 <code>folia-supported: true</code>，<code>api-version</code> 提到 1.19 以上；</li>
+        <li>编译目标提到 Java 17，依赖换成 <code>dev.folia:folia-api</code>。</li>
+      </ol>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

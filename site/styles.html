@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Styles &amp; chances · CreeperConfettiPro</title>
+<meta name="description" content="Firework style reference: configurable shapes, 17 named colours, hex and RGB formats, multi-effect styles, and how weights normalise to 100%.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="styles">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Styles &amp; chances</h1>
+      <p class="lead">A "style" is a set of firework effects plus a weight. You can define as many styles as you want, and every confetti explosion draws one of them at random.</p>
+
+      <h2 id="schema">Style schema</h2>
+
+      <p>Styles live under <code>firework_styles</code>. The key is the style name — pick anything, including spaces if you quote it:</p>
+
+<pre><code>firework_styles:
+  &lt;style name&gt;:
+    type: BALL              <span class="tok-c"># shape</span>
+    flicker: true           <span class="tok-c"># twinkle</span>
+    trail: false            <span class="tok-c"># trail</span>
+    colors:                 <span class="tok-c"># main colours, at least one</span>
+      - RED
+      - "#FFD700"
+    fade-colors:            <span class="tok-c"># fade colours, optional</span>
+      - ORANGE</code></pre>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Field</th><th>Required</th><th>Default</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>type</code></td><td>no</td><td><code>BALL</code></td><td>Firework shape — configurable per style; unknown values fall back to <code>BALL</code></td></tr>
+            <tr><td><code>flicker</code></td><td>no</td><td><code>false</code></td><td>Vanilla "twinkle"</td></tr>
+            <tr><td><code>trail</code></td><td>no</td><td><code>false</code></td><td>Vanilla "trail"</td></tr>
+            <tr><td><code>colors</code></td><td><strong>yes</strong></td><td>—</td><td>Main colour list; a single value is also accepted</td></tr>
+            <tr><td><code>fade-colors</code></td><td>no</td><td>empty</td><td>Colours the burst fades into</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="aliases">Accepted key spellings</h3>
+
+      <p>The parser is forgiving, so old configs and snippets copied from other servers just work:</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Canonical</th><th>Also accepted</th></tr></thead>
+          <tbody>
+            <tr><td><code>colors</code></td><td><code>color</code></td></tr>
+            <tr><td><code>fade-colors</code></td><td><code>fade_colors</code>, <code>fade</code></td></tr>
+            <tr><td><code>colors: [RED, BLUE]</code></td><td><code>colors: RED</code> (plain string)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="types">Firework shapes</h2>
+
+      <p>The shape is not a fixed list baked into the plugin — it is a per-style setting. Whatever you put in <code>type</code> is handed to Bukkit's <code>FireworkEffect.Type</code>, so each style can use a different shape, and you can mix them freely in one config.</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Value</th><th>In game</th><th>Works well for</th></tr></thead>
+          <tbody>
+            <tr><td><code>BALL</code></td><td>Classic small sphere</td><td>Anything; best with several colours</td></tr>
+            <tr><td><code>BALL_LARGE</code></td><td>Large sphere, wider spread</td><td>Viewing from a distance, big celebrations</td></tr>
+            <tr><td><code>STAR</code></td><td>Star with spikes</td><td>Paired with flicker</td></tr>
+            <tr><td><code>BURST</code></td><td>Burst that scatters outward</td><td>Multi-colour fades</td></tr>
+            <tr><td><code>CREEPER</code></td><td>Creeper face</td><td>Themed easter eggs, green palettes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>Want a different look per situation? Give each style its own shape — e.g. <code>CREEPER</code> for the rare one, <code>BALL_LARGE</code> for the common one. The plugin picks the shape with the style, not globally.</p>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p><code>CREEPER</code> is a valid <code>FireworkEffect.Type</code> even though vanilla only produces it from specific rockets, so it can be used directly in the config.</p>
+      </div>
+
+      <h2 id="colors">Colour formats</h2>
+
+      <p>Three formats, freely mixed inside one list.</p>
+
+      <h3 id="color-name">1. Colour names</h3>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Name</th><th>Hex</th><th>Name</th><th>Hex</th></tr></thead>
+          <tbody>
+            <tr><td><code>RED</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FF0000;vertical-align:middle"></span></td><td>#FF0000</td><td><code>AQUA</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#00FFFF;vertical-align:middle"></span></td><td>#00FFFF</td></tr>
+            <tr><td><code>ORANGE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFA500;vertical-align:middle"></span></td><td>#FFA500</td><td><code>TEAL</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#008080;vertical-align:middle"></span></td><td>#008080</td></tr>
+            <tr><td><code>YELLOW</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFFF00;vertical-align:middle"></span></td><td>#FFFF00</td><td><code>BLUE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0000FF;vertical-align:middle"></span></td><td>#0000FF</td></tr>
+            <tr><td><code>LIME</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#00FF00;vertical-align:middle"></span></td><td>#00FF00</td><td><code>NAVY</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#000080;vertical-align:middle"></span></td><td>#000080</td></tr>
+            <tr><td><code>GREEN</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#008000;vertical-align:middle"></span></td><td>#008000</td><td><code>PURPLE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#800080;vertical-align:middle"></span></td><td>#800080</td></tr>
+            <tr><td><code>OLIVE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#808000;vertical-align:middle"></span></td><td>#808000</td><td><code>FUCHSIA</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FF00FF;vertical-align:middle"></span></td><td>#FF00FF</td></tr>
+            <tr><td><code>MAROON</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#800000;vertical-align:middle"></span></td><td>#800000</td><td><code>SILVER</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#C0C0C0;vertical-align:middle"></span></td><td>#C0C0C0</td></tr>
+            <tr><td><code>GRAY</code> / <code>GREY</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#808080;vertical-align:middle"></span></td><td>#808080</td><td><code>WHITE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFFFFF;border:1px solid #ccc;vertical-align:middle"></span></td><td>#FFFFFF</td></tr>
+            <tr><td><code>BLACK</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#000000;vertical-align:middle"></span></td><td>#000000</td><td colspan="2">Names are case-insensitive: <code>red</code> = <code>RED</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="color-hex">2. Hex</h3>
+
+<pre><code>colors:
+  - "#FFD700"    <span class="tok-c"># six digits, # optional</span>
+  - "#f00"       <span class="tok-c"># three digits = #FF0000</span>
+  - "1E90FF"     <span class="tok-c"># without # also works</span></code></pre>
+
+      <p>Six digits are read as <code>RRGGBB</code>, three as <code>RGB</code> with each digit duplicated. In YAML a value starting with <code>#</code> must be quoted, otherwise it becomes a comment.</p>
+
+      <h3 id="color-rgb">3. RGB map</h3>
+
+<pre><code>colors:
+  - RED: 255
+    GREEN: 100
+    BLUE: 0</code></pre>
+
+      <p>All three channels are required and must be 0–255, otherwise the colour is dropped. Shorthand keys work too:</p>
+
+<pre><code>colors:
+  - rgb: "#FF6400"
+  - value: 16737843   <span class="tok-c"># decimal integer, same as #FF6403</span></code></pre>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p><strong>Invalid colours are dropped silently.</strong> A typo in a colour name does not raise an error — it just does not apply. If every colour in an effect is invalid the effect is skipped, and if every effect in a style is skipped the style never loads: it will not show up in <code>/cc effect list</code> and takes no share of the chances.</p>
+      </div>
+
+      <h2 id="multi">Several effects in one style</h2>
+
+      <p>A style value can be a list. Each entry is a complete effect, and they all play in the same explosion — handy for a main burst plus accents.</p>
+
+<pre><code>firework_styles:
+  grand_finale:
+    - type: BALL_LARGE
+      flicker: true
+      trail: true
+      colors:
+        - "#FFD700"
+        - WHITE
+      fade-colors:
+        - ORANGE
+    - type: STAR
+      colors:
+        - "#00E5FF"
+      fade-colors:
+        - BLUE
+    - type: BURST
+      trail: true
+      colors:
+        - FUCHSIA
+        - PURPLE</code></pre>
+
+      <p>Each list entry is an <em>effect</em>, not a style. All effects in the list share the style's single weight — they are not drawn separately.</p>
+
+      <h2 id="weights">Weights &amp; auto-compensation</h2>
+
+      <p>Numbers in <code>firework_chances</code> are <strong>weights, not percentages</strong>. On load the plugin normalises them so the total is always exactly 100%.</p>
+
+<pre><code>firework_chances:
+  classic: 4      <span class="tok-c"># 4/10 = 40%</span>
+  starburst: 3    <span class="tok-c"># 3/10 = 30%</span>
+  rainbow: 2      <span class="tok-c"># 2/10 = 20%</span>
+  creeper: 1      <span class="tok-c"># 1/10 = 10%</span></code></pre>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Situation</th><th>What the plugin does</th></tr></thead>
+          <tbody>
+            <tr><td>Weights do not total 100</td><td>Scales them proportionally back to 100%</td></tr>
+            <tr><td>A style has no weight</td><td>Gets the average of the defined weights</td></tr>
+            <tr><td>No weights at all</td><td>Every style gets an equal share</td></tr>
+            <tr><td>All weights are 0</td><td>Falls back to uniform random</td></tr>
+            <tr><td>Rounding leaves 99.99 or 100.01</td><td>The difference is added to the largest style</td></tr>
+            <tr><td>An unknown style name is listed</td><td>That line is ignored</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="set-chance">Pinning one style with a command</h3>
+
+      <p><code>/cc effect chance &lt;style&gt; &lt;percent&gt;</code> pins that style to an exact value and redistributes the rest proportionally:</p>
+
+<pre><code>/cc effect chance classic 50</code></pre>
+
+      <p>Starting from 40 / 30 / 20 / 10 the result is 50 / 25 / 16.67 / 8.33 — the other three keep their relative proportions and the total stays at 100.</p>
+
+      <p>To go back to an even split use <code>/cc effect chance reset</code>.</p>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>Chances are displayed with two decimals. Anything changed through a command or the GUI is written back to <code>config.yml</code> immediately — no reload needed.</p>
+      </div>
+
+      <h2 id="capture">Capture a style in game</h2>
+
+      <p>Writing colours by hand works, but it is easier to build the firework you like with vanilla items and let the plugin read it.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">Get a rocket that has an effect</div>
+          <p>The plugin reads the <code>FireworkMeta</code> of the item in your main hand, so the rocket must carry at least one explosion effect — a plain flight-duration rocket does not count. NBT form for 1.20.4 and older:</p>
+<pre><code>/give @s firework_rocket{Explosion:{Type:3,Colors:[I;16711680,16777215],Flicker:1,Trail:0}} 1</code></pre>
+          <p>From 1.20.5 on, the component form:</p>
+<pre><code>/give @s firework_rocket[firework_explosion={shape:"star",colors:[16711680,16777215],has_twinkle:true}] 1</code></pre>
+          <p>The syntax changes between versions; if neither line works, use an item generator for your version. The plugin only cares that the held rocket has an effect — not how it was made.</p>
+        </li>
+        <li>
+          <div class="s-title">Hold it and run the command</div>
+<pre><code>/cc effect add my_style      <span class="tok-c"># add; a duplicate name is rejected</span>
+/cc effect set my_style      <span class="tok-c"># overwrite an existing style</span></code></pre>
+          <p>On success it immediately previews the style at your feet and writes it to the config. Without a name it becomes <code>style1</code>, <code>style2</code>, …</p>
+        </li>
+        <li>
+          <div class="s-title">Check the result</div>
+<pre><code>/cc effect list</code></pre>
+          <p>The list shows each style's effect count and current chance.</p>
+        </li>
+      </ol>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>All of this is also doable in the GUI: <code>/cc gui</code> → click the nether star to import the rocket in your hand; right-click any style to preview it.</p>
+      </div>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>烟花样式与概率</h1>
+      <p class="lead">一个「样式」就是一组烟花效果加一个出现权重。样式数量不限，每次苦力怕变成烟花时按权重随机抽一个播放。</p>
+
+      <h2 id="schema">样式结构</h2>
+
+      <p>样式写在 <code>firework_styles</code> 下，键名就是样式名（可随意起名，含空格时加引号即可）：</p>
+
+<pre><code>firework_styles:
+  &lt;样式名&gt;:
+    type: BALL              <span class="tok-c"># 形状</span>
+    flicker: true           <span class="tok-c"># 是否闪烁</span>
+    trail: false            <span class="tok-c"># 是否带尾迹</span>
+    colors:                 <span class="tok-c"># 主色，至少一个</span>
+      - RED
+      - "#FFD700"
+    fade-colors:            <span class="tok-c"># 渐变色，可选</span>
+      - ORANGE</code></pre>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>字段</th><th>必填</th><th>默认</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>type</code></td><td>否</td><td><code>BALL</code></td><td>烟花形状，每个样式单独配置；写错时回退为 <code>BALL</code></td></tr>
+            <tr><td><code>flicker</code></td><td>否</td><td><code>false</code></td><td>闪烁效果（原版的「闪烁」）</td></tr>
+            <tr><td><code>trail</code></td><td>否</td><td><code>false</code></td><td>拖尾效果（原版的「踪迹」）</td></tr>
+            <tr><td><code>colors</code></td><td><strong>是</strong></td><td>—</td><td>主色列表。写成单值也行</td></tr>
+            <tr><td><code>fade-colors</code></td><td>否</td><td>空</td><td>爆炸后的渐变色列表</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="aliases">兼容写法</h3>
+
+      <p>解析器对键名比较宽容，下列写法都等价，老配置或别人分享的片段可以直接粘贴：</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>标准写法</th><th>同样接受</th></tr></thead>
+          <tbody>
+            <tr><td><code>colors</code></td><td><code>color</code></td></tr>
+            <tr><td><code>fade-colors</code></td><td><code>fade_colors</code>、<code>fade</code></td></tr>
+            <tr><td><code>colors: [RED, BLUE]</code></td><td><code>colors: RED</code>（单色直接写字符串）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="types">烟花形状</h2>
+
+      <p>形状不是插件里写死的固定清单，而是每个样式各自的配置项。<code>type</code> 的值会直接交给 Bukkit 的 <code>FireworkEffect.Type</code>，因此同一份配置里每个样式都可以用不同的形状，随意混搭。</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>值</th><th>游戏内表现</th><th>适合</th></tr></thead>
+          <tbody>
+            <tr><td><code>BALL</code></td><td>小球形，最经典</td><td>通用，颜色多时最好看</td></tr>
+            <tr><td><code>BALL_LARGE</code></td><td>大球形，扩散范围更大</td><td>远距离观赏、大型庆典</td></tr>
+            <tr><td><code>STAR</code></td><td>星形，带尖角</td><td>配合闪烁效果</td></tr>
+            <tr><td><code>BURST</code></td><td>爆裂形，向四周散射</td><td>多色渐变</td></tr>
+            <tr><td><code>CREEPER</code></td><td>苦力怕脸形状</td><td>主题彩蛋，绿色系最搭</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>想让不同场合有不同观感？给每个样式配自己的形状即可——比如稀有样式用 <code>CREEPER</code>，常见样式用 <code>BALL_LARGE</code>。形状跟着样式走，不是全局设定。</p>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p><code>CREEPER</code> 形状的烟花在原版里只由特定烟花火箭产生，但它属于 <code>FireworkEffect.Type</code> 的合法枚举值，因此可以直接在配置里使用。</p>
+      </div>
+
+      <h2 id="colors">颜色写法</h2>
+
+      <p>颜色有三种写法，同一个列表里可以混用。</p>
+
+      <h3 id="color-name">1. 颜色名称</h3>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>名称</th><th>色值</th><th>名称</th><th>色值</th></tr></thead>
+          <tbody>
+            <tr><td><code>RED</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FF0000;vertical-align:middle"></span></td><td>#FF0000</td><td><code>AQUA</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#00FFFF;vertical-align:middle"></span></td><td>#00FFFF</td></tr>
+            <tr><td><code>ORANGE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFA500;vertical-align:middle"></span></td><td>#FFA500</td><td><code>TEAL</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#008080;vertical-align:middle"></span></td><td>#008080</td></tr>
+            <tr><td><code>YELLOW</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFFF00;vertical-align:middle"></span></td><td>#FFFF00</td><td><code>BLUE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0000FF;vertical-align:middle"></span></td><td>#0000FF</td></tr>
+            <tr><td><code>LIME</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#00FF00;vertical-align:middle"></span></td><td>#00FF00</td><td><code>NAVY</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#000080;vertical-align:middle"></span></td><td>#000080</td></tr>
+            <tr><td><code>GREEN</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#008000;vertical-align:middle"></span></td><td>#008000</td><td><code>PURPLE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#800080;vertical-align:middle"></span></td><td>#800080</td></tr>
+            <tr><td><code>OLIVE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#808000;vertical-align:middle"></span></td><td>#808000</td><td><code>FUCHSIA</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FF00FF;vertical-align:middle"></span></td><td>#FF00FF</td></tr>
+            <tr><td><code>MAROON</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#800000;vertical-align:middle"></span></td><td>#800000</td><td><code>SILVER</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#C0C0C0;vertical-align:middle"></span></td><td>#C0C0C0</td></tr>
+            <tr><td><code>GRAY</code> / <code>GREY</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#808080;vertical-align:middle"></span></td><td>#808080</td><td><code>WHITE</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#FFFFFF;border:1px solid #ccc;vertical-align:middle"></span></td><td>#FFFFFF</td></tr>
+            <tr><td><code>BLACK</code> <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#000000;vertical-align:middle"></span></td><td>#000000</td><td colspan="2">名称不区分大小写，<code>red</code> 与 <code>RED</code> 等价</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="color-hex">2. 十六进制</h3>
+
+<pre><code>colors:
+  - "#FFD700"    <span class="tok-c"># 六位，# 可省略</span>
+  - "#f00"       <span class="tok-c"># 三位简写 = #FF0000</span>
+  - "1E90FF"     <span class="tok-c"># 不带 # 也可以</span></code></pre>
+
+      <p>六位按 <code>RRGGBB</code> 解析，三位按 <code>RGB</code> 逐位复制成 <code>RRGGBB</code>。注意在 YAML 里以 <code>#</code> 开头的值必须加引号，否则会被当成注释。</p>
+
+      <h3 id="color-rgb">3. RGB 映射</h3>
+
+<pre><code>colors:
+  - RED: 255
+    GREEN: 100
+    BLUE: 0</code></pre>
+
+      <p>三个分量都必须存在且落在 0–255，否则这个颜色会被判为无效。也支持简写键：</p>
+
+<pre><code>colors:
+  - rgb: "#FF6400"
+  - value: 16737843   <span class="tok-c"># 十进制整数，等价于 #FF6403</span></code></pre>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p><strong>无效颜色会被静默丢弃。</strong>拼错的颜色名不会报错，只是不生效；如果一个效果里所有颜色都无效，这个效果就会被整个跳过；如果一个样式的所有效果都被跳过，这个样式就不会被加载——它不会出现在 <code>/cc effect list</code> 里，也不参与概率分配。</p>
+      </div>
+
+      <h2 id="multi">一个样式包含多个效果</h2>
+
+      <p>样式值可以是一个列表，列表里每个元素都是一份完整的效果定义。它们会在同一次爆炸中同时播放，适合做「主花 + 副花」的层次感。</p>
+
+<pre><code>firework_styles:
+  grand_finale:
+    - type: BALL_LARGE
+      flicker: true
+      trail: true
+      colors:
+        - "#FFD700"
+        - WHITE
+      fade-colors:
+        - ORANGE
+    - type: STAR
+      colors:
+        - "#00E5FF"
+      fade-colors:
+        - BLUE
+    - type: BURST
+      trail: true
+      colors:
+        - FUCHSIA
+        - PURPLE</code></pre>
+
+      <p>注意列表里的每一项都是「效果」，不是「样式」。写在列表里的多个效果共享同一个权重，不会分别抽签。</p>
+
+      <h2 id="weights">概率权重与自动补偿</h2>
+
+      <p><code>firework_chances</code> 里填的数字<strong>不是百分比，而是权重</strong>。插件加载时会做一次归一化，保证所有样式的概率之和恒等于 100%。</p>
+
+<pre><code>firework_chances:
+  classic: 4      <span class="tok-c"># 4/10 = 40%</span>
+  starburst: 3    <span class="tok-c"># 3/10 = 30%</span>
+  rainbow: 2      <span class="tok-c"># 2/10 = 20%</span>
+  creeper: 1      <span class="tok-c"># 1/10 = 10%</span></code></pre>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>情况</th><th>插件的处理</th></tr></thead>
+          <tbody>
+            <tr><td>权重之和不是 100</td><td>按比例缩放，总和强制归到 100%</td></tr>
+            <tr><td>某样式没写权重</td><td>取其它已定义权重的平均值</td></tr>
+            <tr><td>一个权重都没写</td><td>所有样式平均分配</td></tr>
+            <tr><td>全部权重为 0</td><td>退化为等概率随机</td></tr>
+            <tr><td>四舍五入导致总和 99.99 或 100.01</td><td>差额补到当前概率最大的那个样式上</td></tr>
+            <tr><td>写了不存在的样式名</td><td>忽略该行</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="set-chance">用指令精确设定某个样式的概率</h3>
+
+      <p><code>/cc effect chance &lt;样式名&gt; &lt;百分比&gt;</code> 会把指定样式<strong>钉死</strong>在给定值，剩下的百分比按原有比例分配给其它样式：</p>
+
+<pre><code>/cc effect chance classic 50</code></pre>
+
+      <p>假设原来是 40 / 30 / 20 / 10，执行后变成 50 / 25 / 16.67 / 8.33——其余三个保持原来的相对比例，总和仍是 100。</p>
+
+      <p>想回到平均分配，用 <code>/cc effect chance reset</code>。</p>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>概率显示保留两位小数。任何通过指令或 GUI 的修改都会立刻写回 <code>config.yml</code>，不需要再执行 <code>reload</code>。</p>
+      </div>
+
+      <h2 id="capture">从游戏内采集样式</h2>
+
+      <p>手写颜色固然可以，但更省事的做法是先用原版烟花调出满意的效果，再让插件读取它。</p>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">准备一支带效果的烟花火箭</div>
+          <p>插件读取的是主手物品的 <code>FireworkMeta</code>，所以这支烟花必须至少带有一个爆炸效果（纯飞行时间的烟花不算）。1.20.4 及以前的 NBT 写法：</p>
+<pre><code>/give @s firework_rocket{Explosion:{Type:3,Colors:[I;16711680,16777215],Flicker:1,Trail:0}} 1</code></pre>
+          <p>1.20.5 之后改用组件写法：</p>
+<pre><code>/give @s firework_rocket[firework_explosion={shape:"star",colors:[16711680,16777215],has_twinkle:true}] 1</code></pre>
+          <p>语法在版本间有变化，如果上面两条都不生效，用对应版本的道具生成器生成一支带效果的烟花即可——插件只关心「手里这支烟花有没有效果」，不关心它是怎么来的。</p>
+        </li>
+        <li>
+          <div class="s-title">手持烟花执行添加指令</div>
+<pre><code>/cc effect add my_style      <span class="tok-c"># 新增，名字重复会提示已存在</span>
+/cc effect set my_style      <span class="tok-c"># 覆盖同名样式</span></code></pre>
+          <p>成功后会在你脚下立刻放一次预览，同时写入配置。省略名字时会自动取 <code>style1</code>、<code>style2</code>…</p>
+        </li>
+        <li>
+          <div class="s-title">确认结果</div>
+<pre><code>/cc effect list</code></pre>
+          <p>列表会显示每个样式的效果数量与当前概率。</p>
+        </li>
+      </ol>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>也可以完全在图形界面里完成：<code>/cc gui</code> → 点「添加烟花样式」（下界之星）→ 手持烟花即可入库；在样式上右键可以随时预览。</p>
+      </div>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

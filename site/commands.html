@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commands &amp; permissions · CreeperConfettiPro</title>
+<meta name="description" content="All CreeperConfettiPro commands: help, effect, chance, gui, language, reload — plus permission nodes and tab completion.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="commands">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Commands &amp; permissions</h1>
+      <p class="lead">The root command is <code>/creeperconfetti</code>, with <code>/cc</code> and <code>/confetti</code> registered as aliases. Every feature is a subcommand.</p>
+
+      <h2 id="overview">Command overview</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Subcommand</th><th>Aliases</th><th>Purpose</th><th>Players only</th></tr></thead>
+          <tbody>
+            <tr><td><code>help [page|command]</code></td><td><code>?</code>, <code>h</code></td><td>Paginated help with clickable page buttons</td><td>no</td></tr>
+            <tr><td><code>effect &lt;action&gt;</code></td><td><code>effects</code>, <code>style</code>, <code>styles</code>, <code>firework</code></td><td>Manage styles and per-style chances</td><td>some</td></tr>
+            <tr><td><code>chance [percent]</code></td><td><code>probability</code>, <code>percent</code></td><td>View or set the overall chance</td><td>no</td></tr>
+            <tr><td><code>gui</code></td><td><code>menu</code></td><td>Open the in-game style manager</td><td>yes</td></tr>
+            <tr><td><code>language &lt;action&gt;</code></td><td><code>lang</code></td><td>View, switch and reload languages</td><td>no</td></tr>
+            <tr><td><code>reload</code></td><td><code>rl</code></td><td>Reload config, styles, language and aliases</td><td>no</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Running <code>/cc</code> with no arguments is the same as <code>/cc help</code>. An unknown subcommand prints a hint and opens the first help page.</p>
+
+      <h2 id="effect">/cc effect</h2>
+
+      <p>Everything about styles lives here. Brackets are optional arguments, angle brackets are required.</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Usage</th><th>Description</th><th>Permission</th><th>Restriction</th></tr></thead>
+          <tbody>
+            <tr><td><code>/cc effect list</code></td><td>List every style: index, name, effect count, current chance</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect add [name]</code></td><td>Save the rocket in your hand as a new style; without a name it becomes <code>style1</code>, <code>style2</code>…</td><td><code>effect</code></td><td>players only</td></tr>
+            <tr><td><code>/cc effect set &lt;name&gt;</code></td><td>Overwrite a style with the rocket in your hand (creates it if missing)</td><td><code>effect</code></td><td>players only</td></tr>
+            <tr><td><code>/cc effect remove &lt;name&gt;</code></td><td>Delete a style; alias <code>delete</code></td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect reset</code></td><td>Restore the four built-in styles and rebalance the chances</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect preview [name]</code></td><td>Preview a style at your feet; without a name a random one is previewed; alias <code>test</code></td><td><code>effect</code></td><td>players only</td></tr>
+            <tr><td><code>/cc effect chance</code></td><td>Show every chance and the total</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect chance &lt;name&gt; &lt;percent&gt;</code></td><td>Pin one style to a chance; the rest are compensated</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect chance reset</code></td><td>Reset all chances to an even split</td><td><code>effect</code></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="effect-examples">Examples</h3>
+
+<pre><code><span class="tok-c"># what is configured right now</span>
+/cc effect list
+
+<span class="tok-c"># hold a rocket with an effect, save it as "festival"</span>
+/cc effect add festival
+
+<span class="tok-c"># give it half of the weight; the others share the rest</span>
+/cc effect chance festival 50
+
+<span class="tok-c"># preview it on its own</span>
+/cc effect preview festival
+
+<span class="tok-c"># remove it</span>
+/cc effect remove festival</code></pre>
+
+      <p>Style names are case-insensitive: <code>Classic</code> and <code>classic</code> are the same style. The original capitalisation is kept for display and when writing back to the config.</p>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p><code>add</code> and <code>set</code> automatically preview the style at your position on success, so you do not need a separate <code>preview</code>.</p>
+      </div>
+
+      <h2 id="chance">/cc chance</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Usage</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>/cc chance</code></td><td>Show the current overall chance</td></tr>
+            <tr><td><code>/cc chance &lt;0-100&gt;</code></td><td>Set the overall chance; written to the config immediately</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+<pre><code>/cc chance 100     <span class="tok-c"># every creeper becomes a firework</span>
+/cc chance 5       <span class="tok-c"># five percent</span>
+/cc chance 0       <span class="tok-c"># effectively disable it</span></code></pre>
+
+      <p>Values outside 0–100 or non-numbers are rejected with a message. This value and the per-style weights are two separate dimensions: first the plugin decides whether to convert, then it draws a style.</p>
+
+      <h2 id="gui">/cc gui</h2>
+
+      <p>Opens the 54-slot style manager. Same capabilities as <code>/cc effect</code>, but visual. Requires <code>creeperconfetti.command.effect</code> and a player. See <a href="gui.html">In-game GUI</a>.</p>
+
+      <h2 id="language">/cc language</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Usage</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>/cc language</code> or <code>/cc language info</code></td><td>Show the current language's display name and code</td></tr>
+            <tr><td><code>/cc language list</code></td><td>List every available language, marking the current one</td></tr>
+            <tr><td><code>/cc language set &lt;code&gt;</code></td><td>Switch language and write it to <code>config.yml</code></td></tr>
+            <tr><td><code>/cc language reload</code></td><td>Re-read the language files (use this after editing YAML)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+<pre><code>/cc language set zh_cn
+/cc language list
+/cc language reload</code></pre>
+
+      <h2 id="reload">/cc reload</h2>
+
+      <p>Does four things, always in this order:</p>
+
+      <ol>
+        <li>re-reads <code>config.yml</code>;</li>
+        <li>re-parses every firework style and chance;</li>
+        <li>reloads the language files;</li>
+        <li>unregisters and re-registers the <code>/cc</code> and <code>/confetti</code> aliases — so alias switches also apply without a restart.</li>
+      </ol>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p><code>/cc reload</code> does <strong>not</strong> run config migration and does <strong>not</strong> re-register the root command. If you changed <code>config-version</code> or swapped the jar, do a full restart.</p>
+      </div>
+
+      <h2 id="permissions">Permission nodes</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Node</th><th>Default</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>creeperconfetti.command</code></td><td>op</td><td>Base permission; without it even <code>help</code> is unavailable</td></tr>
+            <tr><td><code>creeperconfetti.command.effect</code></td><td>op</td><td>Style management, including <code>gui</code></td></tr>
+            <tr><td><code>creeperconfetti.command.chance</code></td><td>op</td><td>View and change the overall chance</td></tr>
+            <tr><td><code>creeperconfetti.command.language</code></td><td>op</td><td>Switch and reload the language</td></tr>
+            <tr><td><code>creeperconfetti.command.reload</code></td><td>op</td><td>Reload the plugin</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><code>creeperconfetti.command</code> lists the four sub-permissions as children, so granting the base node to an admin group is usually enough:</p>
+
+<pre><code><span class="tok-c"># LuckPerms: grant full access</span>
+/lp group admin permission set creeperconfetti.command true</code></pre>
+
+      <p>To let someone edit styles but not reload the plugin, grant the child nodes explicitly:</p>
+
+<pre><code>/lp user Steve permission set creeperconfetti.command true
+/lp user Steve permission set creeperconfetti.command.effect true
+/lp user Steve permission set creeperconfetti.command.reload false</code></pre>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>The help screen only lists entries you have permission for, so a low-privilege player sees a shorter list. That is intended.</p>
+      </div>
+
+      <h2 id="tab">Tab completion</h2>
+
+      <p>Completion is permission-aware; subcommands you cannot use never appear as suggestions:</p>
+
+      <ul>
+        <li>first level: every subcommand you have access to;</li>
+        <li>after <code>/cc effect</code>: <code>list / add / set / remove / reset / preview / chance</code>;</li>
+        <li>after <code>/cc effect set|remove|preview|chance</code>: existing style names, plus <code>reset</code> for <code>chance</code>;</li>
+        <li>after <code>/cc language set</code>: every language code;</li>
+        <li>after <code>/cc help</code>: subcommand names.</li>
+      </ul>
+
+      <p>Style names are read from memory, so a style added a second ago is already tab-completable.</p>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>指令与权限</h1>
+      <p class="lead">主指令是 <code>/creeperconfetti</code>，默认注册 <code>/cc</code> 与 <code>/confetti</code> 两个别名。所有功能都以子命令形式组织。</p>
+
+      <h2 id="overview">指令总览</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>子命令</th><th>别名</th><th>作用</th><th>仅玩家</th></tr></thead>
+          <tbody>
+            <tr><td><code>help [页码|命令]</code></td><td><code>?</code>、<code>h</code></td><td>分页帮助，可点击翻页</td><td>否</td></tr>
+            <tr><td><code>effect &lt;操作&gt;</code></td><td><code>effects</code>、<code>style</code>、<code>styles</code>、<code>firework</code></td><td>管理烟花样式与样式概率</td><td>部分操作</td></tr>
+            <tr><td><code>chance [百分比]</code></td><td><code>probability</code>、<code>percent</code></td><td>查看或设置整体触发概率</td><td>否</td></tr>
+            <tr><td><code>gui</code></td><td><code>menu</code></td><td>打开图形化管理界面</td><td>是</td></tr>
+            <tr><td><code>language &lt;操作&gt;</code></td><td><code>lang</code></td><td>查看、切换、重载语言</td><td>否</td></tr>
+            <tr><td><code>reload</code></td><td><code>rl</code></td><td>重载配置、样式、语言与别名</td><td>否</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>不带任何参数执行 <code>/cc</code> 等同于 <code>/cc help</code>。输入了不存在的子命令时，会提示未知子命令并自动打开第一页帮助。</p>
+
+      <h2 id="effect">/cc effect</h2>
+
+      <p>样式的增删改查都在这里。方括号表示可选参数，尖括号表示必填。</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>用法</th><th>说明</th><th>权限</th><th>限制</th></tr></thead>
+          <tbody>
+            <tr><td><code>/cc effect list</code></td><td>列出全部样式：序号、名称、效果数量、当前概率</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect add [名称]</code></td><td>把主手中的烟花保存为新样式；省略名称时自动命名为 <code>style1</code>、<code>style2</code>…</td><td><code>effect</code></td><td>仅玩家</td></tr>
+            <tr><td><code>/cc effect set &lt;名称&gt;</code></td><td>用主手中的烟花覆盖指定样式（不存在则新建）</td><td><code>effect</code></td><td>仅玩家</td></tr>
+            <tr><td><code>/cc effect remove &lt;名称&gt;</code></td><td>删除样式，别名 <code>delete</code></td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect reset</code></td><td>恢复四个内置样式并重新平均分配概率</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect preview [名称]</code></td><td>在脚下预览指定样式；省略名称则随机预览一个，别名 <code>test</code></td><td><code>effect</code></td><td>仅玩家</td></tr>
+            <tr><td><code>/cc effect chance</code></td><td>查看所有样式的概率与合计</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect chance &lt;名称&gt; &lt;百分比&gt;</code></td><td>把该样式固定在指定概率，其余自动补偿</td><td><code>effect</code></td><td>—</td></tr>
+            <tr><td><code>/cc effect chance reset</code></td><td>所有样式概率重置为平均分配</td><td><code>effect</code></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="effect-examples">示例</h3>
+
+<pre><code><span class="tok-c"># 看看现在有哪些样式</span>
+/cc effect list
+
+<span class="tok-c"># 手持一支带效果的烟花，存成名为 festival 的样式</span>
+/cc effect add festival
+
+<span class="tok-c"># 让它占一半的出现概率，其余样式按原比例分摊剩下的一半</span>
+/cc effect chance festival 50
+
+<span class="tok-c"># 单独预览一下</span>
+/cc effect preview festival
+
+<span class="tok-c"># 玩腻了删掉</span>
+/cc effect remove festival</code></pre>
+
+      <p>样式名不区分大小写，<code>Classic</code> 与 <code>classic</code> 指向同一个样式；但显示与写回配置时保留最初创建时的大小写。</p>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p><code>add</code> 与 <code>set</code> 成功后会自动在你所在位置放一次预览烟花，省得再敲一次 <code>preview</code>。</p>
+      </div>
+
+      <h2 id="chance">/cc chance</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>用法</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>/cc chance</code></td><td>显示当前整体触发概率</td></tr>
+            <tr><td><code>/cc chance &lt;0-100&gt;</code></td><td>设置整体触发概率，立即写回配置</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+<pre><code>/cc chance 100     <span class="tok-c"># 每只苦力怕都变烟花</span>
+/cc chance 5       <span class="tok-c"># 百分之五</span>
+/cc chance 0       <span class="tok-c"># 临时关闭（等价于不装插件）</span></code></pre>
+
+      <p>超出 0–100 或非数字会被拒绝并提示。这个值与样式权重是两个独立维度：先判定要不要变，再抽样式。</p>
+
+      <h2 id="gui">/cc gui</h2>
+
+      <p>打开 54 格的样式管理界面，功能与 <code>/cc effect</code> 等价，但全部可视化操作。使用 <code>creeperconfetti.command.effect</code> 权限，仅玩家可用。详见 <a href="gui.html">图形界面</a>。</p>
+
+      <h2 id="language">/cc language</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>用法</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>/cc language</code> 或 <code>/cc language info</code></td><td>显示当前语言的显示名与代码</td></tr>
+            <tr><td><code>/cc language list</code></td><td>列出全部可用语言，当前项带标记</td></tr>
+            <tr><td><code>/cc language set &lt;代码&gt;</code></td><td>切换语言，同时写入 <code>config.yml</code></td></tr>
+            <tr><td><code>/cc language reload</code></td><td>重新读取语言文件（改过 yml 后用这个，不必重启）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+<pre><code>/cc language set zh_cn
+/cc language list
+/cc language reload</code></pre>
+
+      <h2 id="reload">/cc reload</h2>
+
+      <p>一次性完成四件事，顺序固定：</p>
+
+      <ol>
+        <li>重新读取 <code>config.yml</code>；</li>
+        <li>重新解析全部烟花样式与概率；</li>
+        <li>重新加载语言文件；</li>
+        <li>注销并重新注册 <code>/cc</code>、<code>/confetti</code> 别名（因此改完别名开关也无需重启）。</li>
+      </ol>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p><code>/cc reload</code> <strong>不会</strong>执行配置版本迁移，也<strong>不会</strong>重新注册主指令。如果你修改了 <code>config-version</code> 或换了 jar，请完整重启服务端。</p>
+      </div>
+
+      <h2 id="permissions">权限节点</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>节点</th><th>默认</th><th>作用</th></tr></thead>
+          <tbody>
+            <tr><td><code>creeperconfetti.command</code></td><td>op</td><td>基础权限，所有子命令的前置条件。没有它连 <code>help</code> 都用不了</td></tr>
+            <tr><td><code>creeperconfetti.command.effect</code></td><td>op</td><td>样式管理，包含 <code>gui</code></td></tr>
+            <tr><td><code>creeperconfetti.command.chance</code></td><td>op</td><td>查看与修改整体触发概率</td></tr>
+            <tr><td><code>creeperconfetti.command.language</code></td><td>op</td><td>切换与重载语言</td></tr>
+            <tr><td><code>creeperconfetti.command.reload</code></td><td>op</td><td>重载插件</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><code>creeperconfetti.command</code> 通过 children 把四个子权限串在一起，因此给普通管理员授权时只需给基础权限：</p>
+
+<pre><code><span class="tok-c"># LuckPerms 示例：授予完整管理权限</span>
+/lp group admin permission set creeperconfetti.command true</code></pre>
+
+      <p>只想让某个人调整样式、不允许他重载插件，就单独给子权限：</p>
+
+<pre><code>/lp user Steve permission set creeperconfetti.command true
+/lp user Steve permission set creeperconfetti.command.effect true
+/lp user Steve permission set creeperconfetti.command.reload false</code></pre>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>帮助菜单只会显示你有权限看到的条目，所以低权限玩家打开 <code>/cc help</code> 时列表会短一些，这是预期行为。</p>
+      </div>
+
+      <h2 id="tab">Tab 补全</h2>
+
+      <p>补全按权限过滤，没有权限的子命令不会出现在候选项里：</p>
+
+      <ul>
+        <li>第一层：补全所有你有权限的子命令；</li>
+        <li><code>/cc effect</code> 之后：补全 <code>list / add / set / remove / reset / preview / chance</code>；</li>
+        <li><code>/cc effect set|remove|preview|chance</code> 之后：补全现有样式名，<code>chance</code> 还会补一个 <code>reset</code>；</li>
+        <li><code>/cc language set</code> 之后：补全全部语言代码；</li>
+        <li><code>/cc help</code> 之后：补全子命令名。</li>
+      </ul>
+
+      <p>样式名是实时从内存里取的，刚 <code>add</code> 完立刻按 Tab 就能补出来。</p>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

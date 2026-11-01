@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installation · CreeperConfettiPro</title>
+<meta name="description" content="Requirements, install steps, generated files, verification and uninstall for CreeperConfettiPro.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="install">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Installation</h1>
+      <p class="lead">Two steps: put the right jar into <code>plugins/</code>, restart the server. Everything else can be configured afterwards from inside the game.</p>
+
+      <h2 id="require">Requirements</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>Item</th><th>Bukkit build</th><th>Folia build</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Server</td>
+              <td>Spigot / Paper / Purpur and other Bukkit forks, <code>api-version: 1.13</code></td>
+              <td>Folia, <code>api-version: 1.19</code>, <code>folia-supported: true</code></td>
+            </tr>
+            <tr>
+              <td>MC version</td>
+              <td>1.13 and newer (compiled against the 1.9.4 API)</td>
+              <td>1.19.4 and newer</td>
+            </tr>
+            <tr>
+              <td>Java</td>
+              <td>Java 8+</td>
+              <td>Java 17+</td>
+            </tr>
+            <tr>
+              <td>Dependencies</td>
+              <td colspan="2">None — bStats and commons-lang3 are shaded into the jar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>The Bukkit build targets Java 8 and should load on 1.8–1.12 servers too (those versions ignore the <code>api-version</code> field), but the project is not tested there. Use 1.13+ in production.</p>
+      </div>
+
+      <h2 id="install">Install steps</h2>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">Check your server type</div>
+          <p>Plain Bukkit / Spigot / Paper → bukkit build. Only Folia needs the folia build. Both jars share the same plugin name and cannot coexist.</p>
+        </li>
+        <li>
+          <div class="s-title">Get the jar</div>
+          <p>Grab it from the <a href="download.html">download page</a>, or build it yourself:</p>
+<pre><code>CreeperConfettiPro-bukkit/target/CreeperConfettiPro-4.1.0-bukkit.jar
+CreeperConfettiPro-folia/target/CreeperConfettiPro-4.1.0-folia.jar</code></pre>
+        </li>
+        <li>
+          <div class="s-title">Copy it into <code>plugins/</code></div>
+          <p>Do not unzip it.</p>
+        </li>
+        <li>
+          <div class="s-title">Restart the server</div>
+          <p>Use <code>restart</code> or a full stop/start. The first enable writes the config and every language file — a <code>/reload</code> is not enough for that.</p>
+        </li>
+        <li>
+          <div class="s-title">Tune the settings</div>
+          <p>Edit <code>plugins/CreeperConfettiPro/config.yml</code> then run <code>/cc reload</code>, or just use <code>/cc gui</code> in game.</p>
+        </li>
+      </ol>
+
+      <h2 id="files">What the first start creates</h2>
+
+      <p>The data folder is always <code>plugins/CreeperConfettiPro/</code>:</p>
+
+<pre><code>plugins/CreeperConfettiPro/
+├── config.yml                 <span class="tok-c"># main config: chance, aliases, language, styles</span>
+├── languages/                 <span class="tok-c"># 18 language files, editable</span>
+│   ├── en_us.yml
+│   ├── zh_cn.yml
+│   └── ...
+└── backups/                   <span class="tok-c"># only created during config migration</span>
+    └── config-backup-20261101-060732.yml</code></pre>
+
+      <p>Language files are only written when they are <strong>missing</strong>, so your edits are never overwritten. Delete a file and restart to get the original text back.</p>
+
+      <h2 id="verify">Verify the install</h2>
+
+      <p>The console prints a gold-framed banner with the version, branch author and the server's Java version, ending with <code>plugin enabled successfully</code>. Right after it comes the active language:</p>
+
+<pre><code>----------------------------------------
+    CreeperConfettiPro plugin is loading...
+    Version: 4.1.0-bukkit
+    Branch Author: Hi_PolarBear
+    Server Java Version: 17.0.9
+----------------------------------------
+    CreeperConfettiPro plugin enabled successfully!
+    Thank you for using this plugin!
+----------------------------------------
+Current plugin language: English (en_us)</code></pre>
+
+      <p>Then confirm two things in game:</p>
+
+      <ul>
+        <li><code>/cc help</code> shows the paginated help screen;</li>
+        <li>a summoned creeper leaves a firework and a bang, and no crater.</li>
+      </ul>
+
+<pre><code><span class="tok-c"># run in chat or from the console</span>
+/summon minecraft:creeper ~ ~ ~ {ExplosionRadius:3,Fuse:20}</code></pre>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>If <code>/cc</code> reports an unknown command, try the full command <code>/creeperconfetti help</code> first. If both work, aliases are registered correctly. If only the full one works, the alias is taken by another plugin or disabled in the config — see <a href="faq.html#alias">FAQ</a>.</p>
+      </div>
+
+      <h2 id="uninstall">Uninstall &amp; roll back</h2>
+
+      <ol>
+        <li>Stop the server.</li>
+        <li>Delete <code>plugins/CreeperConfettiPro-4.1.0-*.jar</code>.</li>
+        <li>(Optional) delete <code>plugins/CreeperConfettiPro/</code> — this also removes your custom styles and translations.</li>
+        <li>Start the server.</li>
+      </ol>
+
+      <p>The plugin never writes into world or player data, so removing it leaves the world untouched — the explosions it cancelled never happened in the first place.</p>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>To keep your tuned styles, back up <code>config.yml</code> and <code>languages/</code> before uninstalling. Put them back in place after reinstalling and the plugin picks them up as-is.</p>
+      </div>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>安装与部署</h1>
+      <p class="lead">整个安装过程只有两步：把正确的 jar 放进 <code>plugins/</code>，重启服务端。所有配置都可以在启动后通过游戏内指令完成。</p>
+
+      <h2 id="require">环境要求</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>项目</th><th>Bukkit 分支</th><th>Folia 分支</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>服务端</td>
+              <td>Spigot / Paper / Purpur 等 Bukkit 系，<code>api-version: 1.13</code></td>
+              <td>Folia，<code>api-version: 1.19</code>，<code>folia-supported: true</code></td>
+            </tr>
+            <tr>
+              <td>MC 版本</td>
+              <td>1.13 及以上（编译基于 1.9.4 API）</td>
+              <td>1.19.4 及以上</td>
+            </tr>
+            <tr>
+              <td>Java</td>
+              <td>Java 8 及以上</td>
+              <td>Java 17 及以上</td>
+            </tr>
+            <tr>
+              <td>依赖</td>
+              <td colspan="2">无。bStats 与 commons-lang3 已通过 shade 打进 jar 内部</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>Bukkit 分支以 Java 8 为目标编译，理论上能在 1.8–1.12 的服务端加载（这些版本会忽略 <code>api-version</code> 字段），但项目未对这些版本做测试。生产环境建议使用 1.13 以上。</p>
+      </div>
+
+      <h2 id="install">安装步骤</h2>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">确认服务端类型</div>
+          <p>普通 Bukkit / Spigot / Paper 用 bukkit 分支；只有 Folia 才用 folia 分支。两者插件名相同，不能共存。</p>
+        </li>
+        <li>
+          <div class="s-title">取得 jar</div>
+          <p>从 <a href="download.html">下载页</a> 获取，或自行构建：</p>
+<pre><code>CreeperConfettiPro-bukkit/target/CreeperConfettiPro-4.1.0-bukkit.jar
+CreeperConfettiPro-folia/target/CreeperConfettiPro-4.1.0-folia.jar</code></pre>
+        </li>
+        <li>
+          <div class="s-title">放入插件目录</div>
+          <p>把 jar 复制到服务端的 <code>plugins/</code> 文件夹，不要解压。</p>
+        </li>
+        <li>
+          <div class="s-title">重启服务端</div>
+          <p>使用 <code>restart</code> 或完全停止后启动。首次启用会生成配置文件与全部语言文件，这一步不能靠 <code>/reload</code> 完成。</p>
+        </li>
+        <li>
+          <div class="s-title">调整设置</div>
+          <p>可以编辑 <code>plugins/CreeperConfettiPro/config.yml</code> 后执行 <code>/cc reload</code>，也可以直接在游戏里用 <code>/cc gui</code> 操作。</p>
+        </li>
+      </ol>
+
+      <h2 id="files">首次启动会生成什么</h2>
+
+      <p>插件的数据目录固定为 <code>plugins/CreeperConfettiPro/</code>：</p>
+
+<pre><code>plugins/CreeperConfettiPro/
+├── config.yml                 <span class="tok-c"># 主配置：概率、别名、语言、烟花样式</span>
+├── languages/                 <span class="tok-c"># 18 个语言文件，可直接编辑</span>
+│   ├── zh_cn.yml
+│   ├── en_us.yml
+│   └── ...
+└── backups/                   <span class="tok-c"># 仅在配置迁移时生成</span>
+    └── config-backup-20261101-060732.yml</code></pre>
+
+      <p>语言文件只有在<strong>不存在</strong>时才会被写入，所以你改过的翻译不会被覆盖。想恢复原始文案，删掉对应文件后重启即可重新生成。</p>
+
+      <h2 id="verify">验证安装</h2>
+
+      <p>启动时控制台会输出一段带金色分隔线的启动信息，包含版本号、分支作者、服务器 Java 版本，最后一行是 <code>plugin enabled successfully</code>。随后还有一行当前语言提示：</p>
+
+<pre><code>----------------------------------------
+    CreeperConfettiPro 插件正在加载中...
+    Version: 4.1.0-bukkit
+    Branch Author: Hi_PolarBear
+    Server Java Version: 17.0.9
+----------------------------------------
+    CreeperConfettiPro 插件已成功启用！
+    感谢使用本插件！
+----------------------------------------
+当前插件语言: 简体中文 (zh_cn)</code></pre>
+
+      <p>进游戏后再确认两件事：</p>
+
+      <ul>
+        <li>输入 <code>/cc help</code> 能看到分页帮助；</li>
+        <li>召唤并引爆一只苦力怕，正常应当只看到烟花与爆炸音效，脚下不留坑。</li>
+      </ul>
+
+<pre><code><span class="tok-c"># 在聊天栏或控制台执行</span>
+/summon minecraft:creeper ~ ~ ~ {ExplosionRadius:3,Fuse:20}</code></pre>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>如果 <code>/cc</code> 提示未知指令，先试完整指令 <code>/creeperconfetti help</code>。两者都能用时，说明别名注册正常；只有完整指令可用，则是别名被其他插件占用或被配置关闭了，处理方法见 <a href="faq.html#alias">常见问题</a>。</p>
+      </div>
+
+      <h2 id="uninstall">卸载与回滚</h2>
+
+      <ol>
+        <li>停止服务端。</li>
+        <li>删除 <code>plugins/CreeperConfettiPro-4.1.0-*.jar</code>。</li>
+        <li>（可选）删除数据目录 <code>plugins/CreeperConfettiPro/</code>，这会一并清除自定义样式与语言修改。</li>
+        <li>启动服务端。</li>
+      </ol>
+
+      <p>插件不会往世界数据或玩家数据里写任何东西，因此卸载后世界状态完全不受影响——之前被取消的爆炸本来就没有留下痕迹。</p>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>如果要保留自己调好的样式，卸载前先备份 <code>config.yml</code> 与 <code>languages/</code>。重新安装时把它们放回原位置，插件会直接沿用。</p>
+      </div>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

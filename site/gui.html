@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In-game GUI · CreeperConfettiPro</title>
+<meta name="description" content="Manage firework styles from a chest GUI: list page and edit page slot maps, left-click to edit, right-click to preview, chance buttons and delete.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="gui">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>In-game GUI</h1>
+      <p class="lead">If you would rather not touch YAML, the whole style workflow is clickable: preview, adjust chances, delete, and import the firework you are holding.</p>
+
+      <h2 id="open">Opening the GUI</h2>
+
+<pre><code>/cc gui      <span class="tok-c"># alias: /cc menu</span></code></pre>
+
+      <p>Requires <code>creeperconfetti.command.effect</code> and a player sender. The title comes from <code>gui.title</code> in the language file (default "Firework styles").</p>
+
+      <h2 id="list">Style list page</h2>
+
+      <p>A 54-slot inventory: the top 45 slots are the styles in order, the bottom row is the control bar.</p>
+
+      <div class="gui-window reveal">
+        <div class="gui-title">Firework styles</div>
+        <div class="gui-grid" data-gui="list"></div>
+      </div>
+      <div class="gui-cap">54 slots — 45 styles per page, the bottom row is the control bar</div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Slot</th><th>Content</th><th>On click</th></tr></thead>
+          <tbody>
+            <tr><td>0 – 44</td><td>One firework icon per style: name, effect count, current chance</td><td>Left-click opens the edit page; right-click previews it here</td></tr>
+            <tr><td>45</td><td>Previous page (arrow)</td><td>Shown when page &gt; 1</td></tr>
+            <tr><td>46</td><td>Page indicator (paper)</td><td>Display only, e.g. "Page 1/2"</td></tr>
+            <tr><td>47, 50–52</td><td>Gray glass pane filler</td><td>nothing</td></tr>
+            <tr><td>48</td><td>Even out chances (hopper)</td><td>Resets every chance to the average and saves</td></tr>
+            <tr><td>49</td><td>Add style (nether star)</td><td>Reads the rocket in your hand and creates a style</td></tr>
+            <tr><td>53</td><td>Next page (arrow)</td><td>Shown when more styles exist</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>If your main hand does not hold a rocket with an effect, clicking "Add" prints "Please hold a firework rocket with effects in your main hand". A newly created style appears in the list immediately with the average chance.</p>
+      </div>
+
+      <h2 id="edit">Style edit page</h2>
+
+      <p>A 27-slot inventory titled with the style name, with the chance display in the middle and a ring of +/- buttons around it.</p>
+
+      <div class="gui-window reveal">
+        <div class="gui-title">Firework styles</div>
+        <div class="gui-grid" data-gui="edit"></div>
+      </div>
+      <div class="gui-cap">27 slots — chance buttons around the centre, actions on the last row</div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Slot</th><th>Button</th><th>On click</th></tr></thead>
+          <tbody>
+            <tr><td>4</td><td>Firework icon</td><td>Preview the current style</td></tr>
+            <tr><td>10 / 11 / 12</td><td>Red panes −10% / −5% / −1%</td><td>Lower this style's chance; the others are compensated</td></tr>
+            <tr><td>13</td><td>Paper (current chance)</td><td>Shows "Current chance: xx% (total always stays at 100%)"</td></tr>
+            <tr><td>14 / 15 / 16</td><td>Lime panes +1% / +5% / +10%</td><td>Raise this style's chance; the others are compensated</td></tr>
+            <tr><td>18</td><td>Fire charge</td><td>Copy the held rocket's effects into this style</td></tr>
+            <tr><td>22</td><td>Barrier</td><td>Delete this style</td></tr>
+            <tr><td>26</td><td>Arrow</td><td>Back to the list</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>Every adjustment applies immediately: the screen refreshes, the chance is written to <code>config.yml</code>, and the set is rebalanced. Clicking +10% five times is exactly <code>/cc effect chance &lt;name&gt; 50</code>.</p>
+      </div>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>Delete has <strong>no confirmation step</strong> — the style is gone the moment you click. Preview it with <code>/cc effect preview</code> first, or back up <code>config.yml</code>.</p>
+      </div>
+
+      <h3 id="limits">Edge cases</h3>
+
+      <ul>
+        <li>More than 45 styles: paging arrows appear automatically;</li>
+        <li>down to a single style: it takes the full 100%;</li>
+        <li>deleting the last style leaves an empty list — use "Add style" to start again;</li>
+        <li>a chance will not go higher because the total is already 100% and the others sit at 0 — click "Even out chances" to recover.</li>
+      </ul>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>图形界面</h1>
+      <p class="lead">不想改 YAML 的话，整个样式管理都可以在箱子里点完：预览、调概率、删除、把手里这支烟花存进去。</p>
+
+      <h2 id="open">打开界面</h2>
+
+<pre><code>/cc gui      <span class="tok-c"># 别名 /cc menu</span></code></pre>
+
+      <p>需要 <code>creeperconfetti.command.effect</code> 权限，且只能由玩家执行。界面标题取自语言文件的 <code>gui.title</code>（默认「烟花样式管理」）。</p>
+
+      <h2 id="list">样式列表页</h2>
+
+      <p>54 格界面，上方 45 格按顺序平铺所有样式，下方一行是操作区。</p>
+
+      <div class="gui-window reveal">
+        <div class="gui-title">烟花样式管理</div>
+        <div class="gui-grid" data-gui="list"></div>
+      </div>
+      <div class="gui-cap">54 格 —— 每页 45 个样式，最下一行是操作区</div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>槽位</th><th>内容</th><th>点击效果</th></tr></thead>
+          <tbody>
+            <tr><td>0 – 44</td><td>每个样式一个烟花图标，名称 + 效果数量 + 当前概率</td><td>左键进入编辑页；右键当场预览</td></tr>
+            <tr><td>45</td><td>上一页（箭头）</td><td>页码 &gt; 1 时出现</td></tr>
+            <tr><td>46</td><td>页码（纸）</td><td>仅显示，例如「第 1/2 页」</td></tr>
+            <tr><td>47、50–52</td><td>灰色玻璃板填充</td><td>无</td></tr>
+            <tr><td>48</td><td>平均分配概率（漏斗）</td><td>所有样式概率重置为平均值并保存</td></tr>
+            <tr><td>49</td><td>添加烟花样式（下界之星）</td><td>读取主手烟花并新增样式，自动命名</td></tr>
+            <tr><td>53</td><td>下一页（箭头）</td><td>还有更多样式时出现</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>点「添加烟花样式」时，如果你主手拿的不是带效果的烟花火箭，会在聊天栏提示「请在主手中拿着带有烟花效果的烟花火箭」。新建的样式会立刻出现在列表里，并自动获得平均概率。</p>
+      </div>
+
+      <h2 id="edit">样式编辑页</h2>
+
+      <p>27 格界面，标题显示样式名，围绕中央的概率显示排开一组加减按钮。</p>
+
+      <div class="gui-window reveal">
+        <div class="gui-title">烟花样式管理</div>
+        <div class="gui-grid" data-gui="edit"></div>
+      </div>
+      <div class="gui-cap">27 格 —— 中间是概率，最下一行是操作</div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>槽位</th><th>按钮</th><th>点击效果</th></tr></thead>
+          <tbody>
+            <tr><td>4</td><td>烟花图标</td><td>预览当前样式</td></tr>
+            <tr><td>10 / 11 / 12</td><td>红色玻璃板 −10% / −5% / −1%</td><td>降低该样式概率，其余样式自动补偿</td></tr>
+            <tr><td>13</td><td>纸（当前概率）</td><td>显示「当前概率: xx%（总和自动保持 100%）」</td></tr>
+            <tr><td>14 / 15 / 16</td><td>绿色玻璃板 +1% / +5% / +10%</td><td>提高该样式概率，其余样式自动补偿</td></tr>
+            <tr><td>18</td><td>火焰弹</td><td>把主手烟花的效果写入该样式</td></tr>
+            <tr><td>22</td><td>屏障</td><td>立即删除该样式</td></tr>
+            <tr><td>26</td><td>箭头</td><td>返回列表</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>每一次加减都是即时生效的：界面刷新、概率写回 <code>config.yml</code>、并再平衡一次。所以连续点 +10% 五次就等于 <code>/cc effect chance &lt;名称&gt; 50</code>。</p>
+      </div>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>删除操作<strong>没有二次确认弹窗</strong>，点下去样式就没了。删除前先 <code>/cc effect preview</code> 看一眼，或者提前备份 <code>config.yml</code>。</p>
+      </div>
+
+      <h3 id="limits">界面里的边界情况</h3>
+
+      <ul>
+        <li>样式多到超过 45 个时自动分页，翻页按钮才会出现；</li>
+        <li>删到只剩一个样式时，它会自动占满 100%；</li>
+        <li>删除最后一个样式后界面为空，用「添加烟花样式」重新建立；</li>
+        <li>概率加不上去是因为已经 100%，其它样式已被压到 0，此时可以点「平均分配」复位。</li>
+      </ul>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

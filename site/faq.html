@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ · CreeperConfettiPro</title>
+<meta name="description" content="CreeperConfettiPro troubleshooting: no damage, no firework, /cc unknown, language stuck in English, chances not adding to 100, console encoding and more.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="faq">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>FAQ</h1>
+      <p class="lead">Organised as symptom → cause → fix. First step for any of them: set <code>debug: true</code> and restart once — the log usually answers it.</p>
+
+      <h2 id="behavior">Behaviour</h2>
+
+      <h3 id="damage">The creeper exploded but dealt no damage and broke nothing</h3>
+
+      <p>That is the design. When the roll hits, the plugin calls <code>event.setCancelled(true)</code> on the whole event, so damage, knockback, block destruction and fire never happen — only the sound and the firework remain.</p>
+
+      <p>If you want "damage but intact terrain", that needs a source change; see <a href="build.html#keep-damage">Keep the damage, drop the crater</a>. Lowering <code>confetti_chance</code> also lets some creepers behave normally again.</p>
+
+      <h3 id="no-firework">I lit a creeper but no firework appeared</h3>
+
+      <ul>
+        <li>Check that <code>confetti_chance</code> is not 0;</li>
+        <li>check that the build matches the server (Folia → folia build, everything else → bukkit build);</li>
+        <li>check the console for errors other than <code>[Alias]</code> and confirm <code>plugin enabled successfully</code> appeared;</li>
+        <li>turn on <code>debug: true</code>: the log prints the loaded styles and chances — an empty list means the config is broken.</li>
+      </ul>
+
+      <h3 id="too-small">The firework is tiny, or it bursts at ground level</h3>
+
+      <p>Flight time (power) is fixed at <code>0</code>, so the firework bursts immediately one block above the creeper instead of climbing. That is deliberate: a rising rocket does not fit combat pacing and gets blocked by terrain.</p>
+
+      <p>To make it more visible, switch <code>type</code> to <code>BALL_LARGE</code> and enable <code>flicker</code> or <code>trail</code>.</p>
+
+      <h3 id="world">Can it apply to only some worlds</h3>
+
+      <p>There is no built-in world filter. The world name is available in the listener, so it is a one-line change — see <a href="build.html#world-filter">Restrict to specific worlds</a>.</p>
+
+      <h2 id="command-issues">Commands</h2>
+
+      <h3 id="alias">/cc says unknown command</h3>
+
+      <p>Three possibilities, in order:</p>
+
+      <ol>
+        <li><strong>The alias is taken by another plugin.</strong> The console shows <code>[Alias] /cc is already registered by another plugin - skipped.</code> Use <code>/creeperconfetti help</code>, or set <code>command-aliases.cc</code> to <code>false</code> to silence it.</li>
+        <li><strong>The alias is disabled in the config.</strong> Check <code>command-aliases.enabled</code> and the per-alias flags, then run <code>/creeperconfetti reload</code> (the alias form is what you are trying to fix).</li>
+        <li><strong>Missing permission.</strong> That produces "You do not have permission", not an unknown command. Grant <code>creeperconfetti.command</code>.</li>
+      </ol>
+
+      <h3 id="permission">Subcommands are listed but denied when run</h3>
+
+      <p>Permissions are checked twice: first <code>creeperconfetti.command</code>, then the sub-permission. With only the base node the help list is populated but execution is refused. Add <code>creeperconfetti.command.effect</code> and friends.</p>
+
+      <h3 id="player-only">/cc gui from the console fails</h3>
+
+      <p>The GUI, <code>effect add</code>, <code>effect set</code> and <code>effect preview</code> need a player context (held item, open inventory), so the console gets "Only players can use this command". Expected behaviour.</p>
+
+      <h3 id="reload-effect">/cc reload did not apply my change</h3>
+
+      <p>Reload re-reads the config, styles, language and aliases, but it does not re-register the root command and does not run migration. A full restart is required when:</p>
+
+      <ul>
+        <li>you replaced the jar;</li>
+        <li>you edited <code>config-version</code>;</li>
+        <li>you added a language file (new files are copied at startup).</li>
+      </ul>
+
+      <h2 id="config-issues">Configuration</h2>
+
+      <h3 id="percent">The chances do not add up to 100</h3>
+
+      <p><code>firework_chances</code> holds weights, not percentages, and they are normalised on load. What <code>/cc effect chance</code> shows is the effective value, and it always totals 100 (rounding drift of ±0.01 is pushed onto the largest entry).</p>
+
+      <p>If the total looks wrong, the usual cause is a style that was skipped because all its colours were invalid — its weight line still exists but the style does not, and such lines are ignored.</p>
+
+      <h3 id="style-missing">A style in the config is missing from the list</h3>
+
+      <p>A style is dropped for exactly one reason: every effect inside it failed to parse. Typically a misspelled colour name (for example <code>GOLD</code> instead of <code>ORANGE</code>/<code>YELLOW</code>) or an RGB map with a missing channel. Turn on <code>debug: true</code>, restart, and compare the logged style names against the config.</p>
+
+      <h3 id="upgrade">The config changed after upgrading</h3>
+
+      <p>That is the migration running. The old file is in <code>plugins/CreeperConfettiPro/backups/config-backup-&lt;timestamp&gt;.yml</code>, untouched. Migration only adds new keys and never overwrites existing values — but a very old config (version 0) has its <code>confetti_effect</code> converted into a style named <code>default</code>.</p>
+
+      <p>To roll back: stop the server, copy the backup over <code>config.yml</code>, start again. Note the version number is old too, so the next start migrates once more.</p>
+
+      <h3 id="serialized">My styles turned into weird <code>==</code> maps</h3>
+
+      <p>Normal. After any command or GUI edit the plugin rewrites that section using Bukkit's serialised format. It still loads correctly, it is just not pleasant to hand-edit. To go back to the readable form, stop the server and replace the block with the hand-written example — see <a href="config.html#rewrite">Configuration</a>.</p>
+
+      <h2 id="language-issues">Language</h2>
+
+      <h3 id="lang">The plugin stays in English</h3>
+
+      <p><code>language: auto</code> relies on a GeoIP lookup of the server's public IP. These environments fail and fall back to English:</p>
+
+      <ul>
+        <li>LAN-only or offline servers;</li>
+        <li>hosts that block outbound HTTP to foreign endpoints;</li>
+        <li>all six endpoints timing out (6 s total budget).</li>
+      </ul>
+
+      <p>Fix: set <code>language</code> to <code>zh_cn</code> (or whatever you need) and restart, or run <code>/cc language set zh_cn</code>. If the log contains <code>[GeoIP] All region APIs failed, falling back to English.</code> that was the cause.</p>
+
+      <h3 id="encoding">Console output is garbled</h3>
+
+      <p>The language files are UTF-8. Garbled text almost always means the Windows console code page is not UTF-8. Add a line to the start script:</p>
+
+<pre><code>chcp 65001
+java -Dfile.encoding=UTF-8 -jar server.jar nogui</code></pre>
+
+      <p>On Linux make sure <code>LANG</code> is a <code>*.UTF-8</code> locale. In-game chat is unaffected.</p>
+
+      <h3 id="translate">I want to translate or reword things</h3>
+
+      <p>Edit <code>plugins/CreeperConfettiPro/languages/&lt;code&gt;.yml</code> and run <code>/cc language reload</code>. Missing keys fall back to English, so you can translate only what matters. Details in <a href="languages.html#custom">Languages</a>.</p>
+
+      <h2 id="other">Other</h2>
+
+      <h3 id="performance">Does it hurt performance with many creepers</h3>
+
+      <p>Barely. Each trigger spawns one firework entity and sets its <code>FireworkMeta</code>; there is no polling task, no repeating scheduler, no always-on listener cost. The style table is a <code>LinkedHashMap</code> and the draw is an O(n) scan with n typically single digits.</p>
+
+      <p>What actually costs performance is the fireworks themselves: a hundred simultaneous explosions is a client rendering problem far more than a server logic problem. Lowering <code>confetti_chance</code> is the effective lever.</p>
+
+      <h3 id="bstats">Does the plugin phone home</h3>
+
+      <p>It uses bStats (pluginId <code>29666</code>), which collects anonymous data: server version, player count bracket, plugin version. No player names, IPs or chat. It can be disabled globally in <code>plugins/bStats/config.yml</code>.</p>
+
+      <h3 id="folia-error">Folia fails at startup</h3>
+
+      <p>Check two things:</p>
+
+      <ol>
+        <li>you are using <code>CreeperConfettiPro-4.1.0-folia.jar</code>, not the bukkit one;</li>
+        <li>Java is 17 or newer — the Folia build targets 17 and throws <code>UnsupportedClassVersionError</code> below that.</li>
+      </ol>
+
+      <h3 id="both">What happens if I install both jars</h3>
+
+      <p>They share a plugin name, so the server loads one and ignores or overwrites the other — unpredictable either way. <strong>Install one.</strong> If you already mixed them up, delete the extra jar and remove <code>plugins/CreeperConfettiPro/</code> before starting again.</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>Still stuck? Post the full startup log with <code>debug</code> enabled, your <code>config.yml</code>, and the server type and version — that is usually enough to pin it down.</p>
+      </div>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>常见问题</h1>
+      <p class="lead">按「症状 → 原因 → 处理」组织。遇到问题的第一步：把 <code>debug: true</code> 打开重启一次，大部分答案会直接写在日志里。</p>
+
+      <h2 id="behavior">行为相关</h2>
+
+      <h3 id="damage">苦力怕炸了，但完全没有伤害也没有破坏方块</h3>
+
+      <p>这不是 bug，是设计。命中概率时插件执行 <code>event.setCancelled(true)</code>，整个爆炸事件被取消，因此伤害、击退、方块破坏、点火全部不发生，只剩下音效和烟花。</p>
+
+      <p>如果你想要「有伤害但地面完好」，需要改动源码，思路见 <a href="build.html#keep-damage">保留伤害，只去掉方块破坏</a>。降低 <code>confetti_chance</code> 也能让一部分苦力怕恢复原版行为。</p>
+
+      <h3 id="no-firework">点燃苦力怕了，但没有烟花</h3>
+
+      <ul>
+        <li>确认 <code>confetti_chance</code> 不是 0；</li>
+        <li>确认服务端类型与分支匹配（Folia 用 folia 分支，其它用 bukkit 分支）；</li>
+        <li>确认控制台没有 <code>[Alias]</code> 之外的报错，并且 <code>plugin enabled successfully</code> 出现过；</li>
+        <li>打开 <code>debug: true</code>，日志会打印加载到的样式列表与概率——样式列表为空说明配置被改坏了。</li>
+      </ul>
+
+      <h3 id="too-small">烟花很小，或者贴在地面上就炸了</h3>
+
+      <p>烟花飞行时间（power）在插件里固定为 <code>0</code>，所以它会在苦力怕头顶一格的位置立刻炸开，不会升空。这是刻意的：升空的烟花跟不上战斗节奏，也容易被地形挡住。</p>
+
+      <p>想让观感更明显，把 <code>type</code> 换成 <code>BALL_LARGE</code>，并开启 <code>flicker</code> 或 <code>trail</code>。</p>
+
+      <h3 id="world">能否只对某些世界生效</h3>
+
+      <p>当前版本没有内置世界白名单。事件监听里可以直接按世界名过滤，改动只有一行，见 <a href="build.html#world-filter">只对指定世界生效</a>。</p>
+
+      <h2 id="command-issues">指令相关</h2>
+
+      <h3 id="alias">/cc 提示未知指令或找不到命令</h3>
+
+      <p>三种可能，按顺序排查：</p>
+
+      <ol>
+        <li><strong>别名被其它插件占用。</strong>控制台会有一条 <code>[Alias] /cc is already registered by another plugin - skipped.</code> 警告。此时用完整指令 <code>/creeperconfetti help</code> 即可，或者把 <code>command-aliases.cc</code> 设为 <code>false</code> 消除警告。</li>
+        <li><strong>别名被配置关闭。</strong>检查 <code>command-aliases.enabled</code> 与对应项是否为 <code>true</code>，改完用完整指令执行 <code>/creeperconfetti reload</code>。</li>
+        <li><strong>没有权限。</strong>缺权限时提示的是「您没有权限使用此命令」，不是未知指令。给玩家 <code>creeperconfetti.command</code>。</li>
+      </ol>
+
+      <h3 id="permission">子命令能看到，但执行时提示没权限</h3>
+
+      <p>权限是两级判断：先要有 <code>creeperconfetti.command</code>，再要有对应子权限。只给了前者时，帮助菜单里看得到条目，执行会被拒。补齐 <code>creeperconfetti.command.effect</code> 等子节点即可。</p>
+
+      <h3 id="player-only">控制台执行 /cc gui 报错</h3>
+
+      <p>界面、<code>effect add</code>、<code>effect set</code>、<code>effect preview</code> 都需要玩家上下文（要读主手物品、要打开背包），控制台执行会提示「只有玩家可以使用此命令」。这是预期行为。</p>
+
+      <h3 id="reload-effect">/cc reload 之后改动没生效</h3>
+
+      <p>重载会重新读取 <code>config.yml</code>、样式、语言与别名，但不会重新注册主指令、也不会执行配置迁移。以下情况必须完整重启：</p>
+
+      <ul>
+        <li>更换了 jar；</li>
+        <li>手动修改了 <code>config-version</code>；</li>
+        <li>新增了语言文件（新文件在启动时才会被复制）。</li>
+      </ul>
+
+      <h2 id="config-issues">配置相关</h2>
+
+      <h3 id="percent">概率加起来不是 100</h3>
+
+      <p><code>firework_chances</code> 里写的是权重，不是百分比，插件加载时会自动归一化。用 <code>/cc effect chance</code> 查看的才是最终生效值，它们一定是 100（±0.01 的四舍五入误差会被自动补到最大项上）。</p>
+
+      <p>如果你看到合计不对，通常是：<code>firework_styles</code> 里有样式因为颜色全部无效而被跳过，权重行还在但样式不存在——这类行会被忽略。</p>
+
+      <h3 id="style-missing">配置里写了样式，但列表里没有</h3>
+
+      <p>整个样式被丢弃只有一种原因：它包含的所有效果都解析失败。常见于颜色名拼错（例如写成 <code>GOLD</code> 而不是 <code>ORANGE</code>/<code>YELLOW</code>），或 RGB 映射缺了某个分量。打开 <code>debug: true</code> 重启，日志会打印实际加载到的样式名，与配置逐个对照即可。</p>
+
+      <h3 id="upgrade">升级插件后配置文件变了</h3>
+
+      <p>说明触发了配置迁移。旧文件已经备份在 <code>plugins/CreeperConfettiPro/backups/config-backup-&lt;时间戳&gt;.yml</code>，内容原样保留。迁移过程只补新键，不覆盖已有值，但如果你的配置结构非常老（版本 0），旧的 <code>confetti_effect</code> 会被转换成名为 <code>default</code> 的样式。</p>
+
+      <p>要回滚：停服 → 用备份覆盖 <code>config.yml</code> → 启动。注意回滚后版本号也是旧的，下次启动会再次迁移。</p>
+
+      <h3 id="serialized">config.yml 里的样式变成了带 == 的奇怪格式</h3>
+
+      <p>正常现象。用指令或 GUI 修改过样式后，插件会用 Bukkit 的序列化格式重写这一段。它仍然能被正确加载，只是不再适合手写。想恢复手写格式，停服后把整段替换成手写示例即可，详见 <a href="config.html#rewrite">配置文件</a>。</p>
+
+      <h2 id="language-issues">语言相关</h2>
+
+      <h3 id="lang">语言一直是英文</h3>
+
+      <p><code>language: auto</code> 依赖 GeoIP 查询服务器公网 IP，以下环境会失败并回退到英文：</p>
+
+      <ul>
+        <li>内网或离线服务器；</li>
+        <li>机房屏蔽了境外 HTTP 请求；</li>
+        <li>6 个接口全部超时（整体上限 6 秒）。</li>
+      </ul>
+
+      <p>解决办法很直接：把 <code>language</code> 改成 <code>zh_cn</code>（或你需要的代码），重启或 <code>/cc language set zh_cn</code>。日志里出现 <code>[GeoIP] All region APIs failed, falling back to English.</code> 就说明是这个原因。</p>
+
+      <h3 id="encoding">控制台中文乱码</h3>
+
+      <p>语言文件本身是 UTF-8。乱码几乎都出现在 Windows 服务端控制台，原因是终端代码页不是 UTF-8。启动脚本里加一行即可：</p>
+
+<pre><code>chcp 65001
+java -Dfile.encoding=UTF-8 -jar server.jar nogui</code></pre>
+
+      <p>Linux 下确认 <code>LANG</code> 环境变量是 <code>*.UTF-8</code>。游戏内聊天不受影响。</p>
+
+      <h3 id="translate">想自己翻译或改文案</h3>
+
+      <p>直接编辑 <code>plugins/CreeperConfettiPro/languages/&lt;代码&gt;.yml</code>，保存后执行 <code>/cc language reload</code>。缺失的键会自动回退英文，所以可以只改你在意的部分。细节见 <a href="languages.html#custom">多语言</a>。</p>
+
+      <h2 id="other">其它</h2>
+
+      <h3 id="performance">大量苦力怕同时爆炸会影响性能吗</h3>
+
+      <p>开销很小：每次触发只生成一个烟花实体，样式只是设置 <code>FireworkMeta</code>，没有额外的调度循环、没有定时任务、没有常驻监听开销。样式表在内存里是 <code>LinkedHashMap</code>，随机抽取是 O(n) 的线性遍历（n = 样式数量，通常个位数）。</p>
+
+      <p>真正吃性能的是烟花本身：上百个烟花同时爆炸时，客户端渲染压力远大于服务端逻辑。这种情况下把 <code>confetti_chance</code> 调低更有效。</p>
+
+      <h3 id="bstats">插件会上报数据吗</h3>
+
+      <p>使用 bStats（pluginId <code>29666</code>），收集的是匿名统计：服务端版本、在线人数区间、插件版本等，不含玩家名、IP 或聊天内容。可以在 <code>plugins/bStats/config.yml</code> 里全局关闭。</p>
+
+      <h3 id="folia-error">Folia 上启动就报错</h3>
+
+      <p>检查两点：</p>
+
+      <ol>
+        <li>用的是 <code>CreeperConfettiPro-4.1.0-folia.jar</code>，不是 bukkit 版；</li>
+        <li>Java 版本 ≥ 17（Folia 分支以 Java 17 为目标编译，低版本会直接 <code>UnsupportedClassVersionError</code>）。</li>
+      </ol>
+
+      <h3 id="both">两个 jar 都放进去了会怎样</h3>
+
+      <p>插件名相同，服务端只会加载其中一个，另一个会被忽略或覆盖，行为不可预测。<strong>只装一个。</strong>如果之前装错过，删掉多余的 jar 并删除 <code>plugins/CreeperConfettiPro/</code> 后重新启动最稳妥。</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>以上都没解决？把 <code>debug</code> 打开后的完整启动日志、<code>config.yml</code> 内容、服务端类型与版本一起贴出来，基本能一眼定位。</p>
+      </div>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · CreeperConfettiPro</title>
+<meta name="description" content="CreeperConfettiPro is a Minecraft server plugin that turns creeper explosions into configurable fireworks. Installation, configuration, commands, styles and Folia support.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="index">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <div class="hero">
+        <div class="hero-top">
+          <img class="hero-logo" alt="CreeperConfettiPro logo" src="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+          <h1>CreeperConfettiPro</h1>
+        </div>
+        <p class="lead">The moment a creeper goes off next to a player, it could be a fireworks show instead. This plugin cancels the blast — <b>no damage, no crater</b> — and puts a fully configurable firework in the same spot: shape, colours, flicker, trail and how often each style appears, all in <code>config.yml</code>.</p>
+      </div>
+
+      <div class="badges">
+        <span class="badge green"><span class="dot"></span>Bukkit 4.1.0</span>
+        <span class="badge green"><span class="dot"></span>Folia 4.1.0</span>
+        <span class="badge">Configurable firework shapes</span>
+        <span class="badge">18 languages</span>
+        <span class="badge">In-game GUI</span>
+        <span class="badge">Config auto-migration</span>
+      </div>
+
+      <div class="social-links" data-social="hero"></div>
+
+      <p><a class="btn btn-primary" href="download.html">Download the latest build</a>
+      &nbsp;<a class="btn btn-ghost" href="install.html">Installation guide</a></p>
+
+      <div class="stats-strip" data-bstats></div>
+
+      <div class="cards two">
+        <a class="card reveal" href="install.html">
+          <div class="c-title">Installation</div>
+          <div class="c-desc">Pick the right build, drop it in <code>plugins/</code>, restart. Requirements and verification included.</div>
+        </a>
+        <a class="card reveal" href="config.html">
+          <div class="c-title">config.yml</div>
+          <div class="c-desc">Every key, its range, and how the automatic config migration behaves.</div>
+        </a>
+        <a class="card reveal" href="commands.html">
+          <div class="c-title">Commands &amp; permissions</div>
+          <div class="c-desc">The six <code>/cc</code> subcommands, permission nodes and tab completion.</div>
+        </a>
+        <a class="card reveal" href="styles.html">
+          <div class="c-title">Styles &amp; chances</div>
+          <div class="c-desc">Three colour formats, multi-effect styles, and how weights always add up to 100%.</div>
+        </a>
+      </div>
+
+      <h2 id="what">What this plugin does</h2>
+
+      <p>CreeperConfettiPro does one thing, but does it thoroughly: it listens for creeper explosions and, depending on a chance you configure, replaces the explosion with a firework.</p>
+
+      <p>It hooks <code>EntityExplodeEvent</code>. When the exploding entity is a creeper and the random roll falls inside the configured chance, the plugin:</p>
+
+      <ol>
+        <li>cancels the whole event — <strong>no damage, no block damage, no knockback</strong>;</li>
+        <li>spawns a firework one block above the creeper;</li>
+        <li>plays the vanilla explosion sound (volume 2.0), so it still sounds like something blew up;</li>
+        <li>removes the creeper entity;</li>
+        <li>detonates the firework one tick later, so the bang and the burst land together.</li>
+      </ol>
+
+      <p>If the roll misses, the event is left untouched and the creeper explodes exactly like vanilla.</p>
+
+      <h2 id="flow">How it works</h2>
+
+      <div class="figure reveal">
+        <svg viewBox="0 0 860 200" role="img" aria-label="Flow: a creeper explosion becomes a firework">
+          <defs>
+            <marker id="ar-en" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+            </marker>
+          </defs>
+
+          <rect x="16" y="24" width="140" height="64" rx="9" fill="var(--bg-elev)" stroke="var(--border-strong)"></rect>
+          <text x="86" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">Creeper detonates</text>
+          <text x="86" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">EntityExplodeEvent</text>
+
+          <rect x="188" y="24" width="140" height="64" rx="9" fill="var(--bg-elev)" stroke="var(--border-strong)"></rect>
+          <text x="258" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">Chance check</text>
+          <text x="258" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">rand &lt; chance</text>
+
+          <rect x="360" y="24" width="140" height="64" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+          <text x="430" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">Cancel blast</text>
+          <text x="430" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">remove the creeper</text>
+
+          <rect x="532" y="24" width="140" height="64" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+          <text x="602" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">Pick a style</text>
+          <text x="602" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">weighted random</text>
+
+          <rect x="704" y="24" width="140" height="64" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+          <text x="774" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">Detonate</text>
+          <text x="774" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">after 1 tick</text>
+
+          <line x1="156" y1="56" x2="182" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-en)"></line>
+          <line x1="328" y1="56" x2="354" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-en)"></line>
+          <line x1="500" y1="56" x2="526" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-en)"></line>
+          <line x1="672" y1="56" x2="698" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-en)"></line>
+
+          <line x1="258" y1="88" x2="258" y2="126" stroke="var(--muted)" stroke-width="1.4" class="flow-dash" marker-end="url(#ar-en)"></line>
+          <rect x="188" y="130" width="140" height="44" rx="8" fill="var(--bg-soft)" stroke="var(--border)" stroke-dasharray="4 3"></rect>
+          <text x="258" y="157" text-anchor="middle" font-size="12" fill="var(--muted)">Vanilla explosion</text>
+
+          <line x1="430" y1="88" x2="430" y2="126" stroke="var(--accent)" stroke-width="1.4" class="flow-dash" marker-end="url(#ar-en)"></line>
+          <rect x="360" y="130" width="140" height="44" rx="8" fill="var(--bg-soft)" stroke="var(--accent-border)"></rect>
+          <text x="430" y="157" text-anchor="middle" font-size="12" fill="var(--text-2)">Explosion sound 2.0</text>
+        </svg>
+        <div class="fig-cap">A hit takes the upper path; a miss leaves vanilla behaviour alone</div>
+      </div>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p><strong>The entire explosion event is cancelled.</strong> Because <code>event.setCancelled(true)</code> runs before damage and block destruction are computed, a creeper that rolls into the confetti path deals no damage and breaks no blocks. Keeping the damage while only swapping the visuals requires a source change — see <a href="build.html#keep-damage">Build &amp; extend</a>.</p>
+      </div>
+
+      <h2 id="branch">Which build to pick</h2>
+
+      <p>There are two separate projects. The code is almost identical; only the scheduling layer and the compile target differ. Picking the wrong one fails at startup, so check your server first.</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>Project</th><th>Runs on</th><th>Compiled for</th><th>Artifact</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CreeperConfettiPro-bukkit</code></td>
+              <td>Spigot, Paper, Purpur, Leaves — every Bukkit-family server</td>
+              <td>Java 8 (spigot-api 1.9.4)</td>
+              <td><code>CreeperConfettiPro-4.1.0-bukkit.jar</code></td>
+            </tr>
+            <tr>
+              <td><code>CreeperConfettiPro-folia</code></td>
+              <td>Folia (declares <code>folia-supported: true</code>)</td>
+              <td>Java 17 (folia-api 1.19.4)</td>
+              <td><code>CreeperConfettiPro-4.1.0-folia.jar</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>Both jars are named <code>CreeperConfettiPro</code> — <strong>never install both</strong>. The Folia build uses <code>folia-api</code> and region schedulers, so it cannot enable on plain Paper; the Bukkit build calls <code>Bukkit.getScheduler()</code>, which does not exist on Folia.</p>
+      </div>
+
+      <h2 id="features">What you get</h2>
+
+      <div class="cards">
+        <div class="card reveal">
+          <div class="c-title">Any number of styles</div>
+          <div class="c-desc">Define as many firework styles as you like; each explosion picks one at random. A single style can hold several effects that play together.</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">Chances that always total 100%</div>
+          <div class="c-desc">Values in the config are weights. The plugin normalises them on load, so you never have to do the maths yourself.</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">In-game style editor</div>
+          <div class="c-desc">A 54-slot chest GUI: left-click to edit, right-click to preview, hold a firework to import it.</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">18 languages</div>
+          <div class="c-desc">Simplified and Traditional Chinese, English, Japanese, Korean, French, German, Spanish and more — with GeoIP auto-detection.</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">Safe config upgrades</div>
+          <div class="c-desc">Versioned migration: old files are backed up, new keys are merged, your values are always preserved.</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">Native Folia support</div>
+          <div class="c-desc">All scheduling goes through region schedulers, entity work is pinned to its owning region, config reads use volatile caches.</div>
+        </div>
+      </div>
+
+      <h2 id="next">Where to go next</h2>
+
+      <ul>
+        <li>Not installed yet? Start with <a href="download.html">Download</a> and <a href="install.html">Installation</a>.</li>
+        <li>Want the firework to look a certain way? See <a href="styles.html">Styles &amp; chances</a>.</li>
+        <li>Prefer clicking to typing YAML? Jump to <a href="gui.html">In-game GUI</a>.</li>
+      </ul>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <div class="hero">
+        <div class="hero-top">
+          <img class="hero-logo" alt="CreeperConfettiPro 图标" src="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+          <h1>CreeperConfettiPro</h1>
+        </div>
+        <p class="lead">苦力怕在玩家身边炸开的那一刻，本可以是一场烟花秀。这个插件取消爆炸——<b>没有伤害、没有弹坑</b>——并在同一个位置放出一支完全可配置的烟花：形状、颜色、闪烁、轨迹、每个样式出现的频率，全部写在 <code>config.yml</code> 里。</p>
+      </div>
+
+      <div class="badges">
+        <span class="badge green"><span class="dot"></span>Bukkit 4.1.0</span>
+        <span class="badge green"><span class="dot"></span>Folia 4.1.0</span>
+        <span class="badge">烟花形状可配置</span>
+        <span class="badge">18 种语言</span>
+        <span class="badge">图形化管理界面</span>
+        <span class="badge">配置自动迁移</span>
+      </div>
+
+      <div class="social-links" data-social="hero"></div>
+
+      <p><a class="btn btn-primary" href="download.html">下载最新版本</a>
+      &nbsp;<a class="btn btn-ghost" href="install.html">安装指南</a></p>
+
+      <div class="stats-strip" data-bstats></div>
+
+      <div class="cards two">
+        <a class="card reveal" href="install.html">
+          <div class="c-title">安装与部署</div>
+          <div class="c-desc">选对分支，丢进 <code>plugins/</code>，重启即可。含环境要求与验证方法。</div>
+        </a>
+        <a class="card reveal" href="config.html">
+          <div class="c-title">配置文件</div>
+          <div class="c-desc"><code>config.yml</code> 每个字段的含义、取值范围与自动迁移规则。</div>
+        </a>
+        <a class="card reveal" href="commands.html">
+          <div class="c-title">指令与权限</div>
+          <div class="c-desc"><code>/cc</code> 的六个子命令、权限节点与 Tab 补全行为。</div>
+        </a>
+        <a class="card reveal" href="styles.html">
+          <div class="c-title">烟花样式与概率</div>
+          <div class="c-desc">三种颜色写法、多效果组合，以及概率如何自动凑成 100%。</div>
+        </a>
+      </div>
+
+      <h2 id="what">这是什么插件</h2>
+
+      <p>CreeperConfettiPro 只做一件事，但把它做得很细：监听苦力怕的爆炸事件，按你配置的概率把「爆炸」替换成「烟花」。</p>
+
+      <p>它监听的是 <code>EntityExplodeEvent</code>。当爆炸实体是苦力怕、并且随机数落在配置的概率区间内时，插件会：</p>
+
+      <ol>
+        <li>取消整个爆炸事件——<strong>没有伤害、没有方块破坏、没有击退</strong>；</li>
+        <li>在苦力怕头顶一格的位置生成一支烟花；</li>
+        <li>播放一次原版的爆炸音效（音量 2.0），保留「炸了」的听觉反馈；</li>
+        <li>移除苦力怕实体；</li>
+        <li>延迟 1 tick 后引爆烟花，让爆炸声与烟花几乎同时出现。</li>
+      </ol>
+
+      <p>如果随机数没有命中，事件不做任何处理，苦力怕就是一次普通的原版爆炸。</p>
+
+      <h2 id="flow">工作流程</h2>
+
+      <div class="figure reveal">
+        <svg viewBox="0 0 860 200" role="img" aria-label="苦力怕爆炸转烟花流程图">
+          <defs>
+            <marker id="ar-zh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+            </marker>
+          </defs>
+
+          <rect x="16" y="24" width="140" height="64" rx="9" fill="var(--bg-elev)" stroke="var(--border-strong)"></rect>
+          <text x="86" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">苦力怕引爆</text>
+          <text x="86" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">EntityExplodeEvent</text>
+
+          <rect x="188" y="24" width="140" height="64" rx="9" fill="var(--bg-elev)" stroke="var(--border-strong)"></rect>
+          <text x="258" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">概率判定</text>
+          <text x="258" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">rand &lt; chance</text>
+
+          <rect x="360" y="24" width="140" height="64" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+          <text x="430" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">取消爆炸</text>
+          <text x="430" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">移除苦力怕实体</text>
+
+          <rect x="532" y="24" width="140" height="64" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+          <text x="602" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">抽选样式</text>
+          <text x="602" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">按权重随机</text>
+
+          <rect x="704" y="24" width="140" height="64" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+          <text x="774" y="53" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--text)">引爆烟花</text>
+          <text x="774" y="72" text-anchor="middle" font-size="10.5" fill="var(--muted)">延迟 1 tick</text>
+
+          <line x1="156" y1="56" x2="182" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-zh)"></line>
+          <line x1="328" y1="56" x2="354" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-zh)"></line>
+          <line x1="500" y1="56" x2="526" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-zh)"></line>
+          <line x1="672" y1="56" x2="698" y2="56" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar-zh)"></line>
+
+          <line x1="258" y1="88" x2="258" y2="126" stroke="var(--muted)" stroke-width="1.4" class="flow-dash" marker-end="url(#ar-zh)"></line>
+          <rect x="188" y="130" width="140" height="44" rx="8" fill="var(--bg-soft)" stroke="var(--border)" stroke-dasharray="4 3"></rect>
+          <text x="258" y="157" text-anchor="middle" font-size="12" fill="var(--muted)">保持原版爆炸</text>
+
+          <line x1="430" y1="88" x2="430" y2="126" stroke="var(--accent)" stroke-width="1.4" class="flow-dash" marker-end="url(#ar-zh)"></line>
+          <rect x="360" y="130" width="140" height="44" rx="8" fill="var(--bg-soft)" stroke="var(--accent-border)"></rect>
+          <text x="430" y="157" text-anchor="middle" font-size="12" fill="var(--text-2)">爆炸音效 2.0</text>
+        </svg>
+        <div class="fig-cap">命中概率走上面一条路径；未命中则维持原版行为</div>
+      </div>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p><strong>取消的是整个爆炸事件。</strong>因为 <code>event.setCancelled(true)</code> 在伤害与方块破坏计算之前生效，所以命中概率时苦力怕不会造成任何伤害，也不会点燃方块。如果你想保留伤害只换掉视觉效果，需要改动源码，见 <a href="build.html#keep-damage">构建与二次开发</a>。</p>
+      </div>
+
+      <h2 id="branch">两个分支怎么选</h2>
+
+      <p>仓库里有两个独立项目，代码几乎完全一致，差别只在调度方式与编译目标。选错了会在启动时直接报错，所以先确认服务端类型。</p>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>项目</th><th>适用服务端</th><th>编译目标</th><th>产物</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CreeperConfettiPro-bukkit</code></td>
+              <td>Spigot、Paper、Purpur、Leaves 等所有 Bukkit 系服务端</td>
+              <td>Java 8（spigot-api 1.9.4）</td>
+              <td><code>CreeperConfettiPro-4.1.0-bukkit.jar</code></td>
+            </tr>
+            <tr>
+              <td><code>CreeperConfettiPro-folia</code></td>
+              <td>Folia（声明 <code>folia-supported: true</code>）</td>
+              <td>Java 17（folia-api 1.19.4）</td>
+              <td><code>CreeperConfettiPro-4.1.0-folia.jar</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>两个 jar 的插件名都叫 <code>CreeperConfettiPro</code>，<strong>不要同时装</strong>。Folia 分支使用了 <code>folia-api</code> 与区域调度器，在普通 Paper 上会因为找不到相关类而无法启用；Bukkit 分支在 Folia 上则会因为 <code>Bukkit.getScheduler()</code> 不存在而失败。</p>
+      </div>
+
+      <h2 id="features">功能一览</h2>
+
+      <div class="cards">
+        <div class="card reveal">
+          <div class="c-title">任意数量的样式</div>
+          <div class="c-desc">配置文件里想写几种写几种，每次爆炸随机抽一种。每个样式还能塞入多个烟花效果同时播放。</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">概率自动凑整</div>
+          <div class="c-desc">各样式写的是「权重」，插件加载时自动归一化，保证概率之和恒为 100%，改完不用自己算。</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">游戏内样式编辑</div>
+          <div class="c-desc">54 格箱子界面：左键编辑、右键预览、手持烟花直接入库，无需改配置文件。</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">18 种语言</div>
+          <div class="c-desc">内置简繁中文、英日韩法德西等语言包，<code>language: auto</code> 时通过 GeoIP 自动匹配服务器地区。</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">配置平滑升级</div>
+          <div class="c-desc">带版本号的配置迁移：升级时自动备份旧文件、合并新增字段，并保留你填过的所有值。</div>
+        </div>
+        <div class="card reveal">
+          <div class="c-title">Folia 原生支持</div>
+          <div class="c-desc">所有调度走区域调度器，实体操作锁定所属区域，配置读取走 volatile 缓存，不碰主线程假设。</div>
+        </div>
+      </div>
+
+      <h2 id="next">下一步</h2>
+
+      <ul>
+        <li>还没装？从 <a href="download.html">下载</a> 和 <a href="install.html">安装与部署</a> 开始。</li>
+        <li>想让烟花长成你想要的样子？看 <a href="styles.html">烟花样式与概率</a>。</li>
+        <li>不想碰配置文件？直接看 <a href="gui.html">图形界面</a>。</li>
+      </ul>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

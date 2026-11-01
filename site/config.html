@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configuration · CreeperConfettiPro</title>
+<meta name="description" content="Every key in config.yml: confetti_chance, command-aliases, language, debug, firework_styles, firework_chances, plus config versioning and migration.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="config">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Configuration</h1>
+      <p class="lead">The config lives at <code>plugins/CreeperConfettiPro/config.yml</code>. Every key can also be changed with <code>/cc</code> commands; after hand-editing, run <code>/cc reload</code>.</p>
+
+      <h2 id="structure">Config structure</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>Key</th><th>Type</th><th>Default</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>config-version</code></td><td>int</td><td><code>3</code></td><td>Migration marker — <strong>do not edit</strong></td></tr>
+            <tr><td><code>debug</code></td><td>bool</td><td><code>false</code></td><td>Verbose logs: style list, chances, GeoIP details</td></tr>
+            <tr><td><code>confetti_chance</code></td><td>0–100</td><td><code>100</code></td><td>Overall chance for a creeper to become a firework</td></tr>
+            <tr><td><code>command-aliases</code></td><td>section</td><td>all on</td><td>Switches for <code>/cc</code> and <code>/confetti</code></td></tr>
+            <tr><td><code>language</code></td><td>string</td><td><code>auto</code></td><td>Plugin language, <code>auto</code> or a language code</td></tr>
+            <tr><td><code>firework_styles</code></td><td>section</td><td>4 built-in styles</td><td>Style definitions</td></tr>
+            <tr><td><code>firework_chances</code></td><td>section</td><td>40/30/20/10</td><td>Per-style weights, normalised to 100% on load</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="chance">confetti_chance</h2>
+
+      <p>The overall trigger chance, 0 to 100, decimals allowed. On every creeper explosion the plugin rolls a random <code>0–100</code> value and only converts the blast when the roll is below this number.</p>
+
+<pre><code><span class="tok-c"># every creeper becomes a firework</span>
+confetti_chance: 100
+
+<span class="tok-c"># roughly one in four</span>
+confetti_chance: 25
+
+<span class="tok-c"># one in ten thousand — a rare easter egg</span>
+confetti_chance: 0.01</code></pre>
+
+      <p>The in-game equivalent is <code>/cc chance 25</code>. The command clamps to 0–100 and rejects anything else; the file itself is not validated, so <code>150</code> behaves like 100 and a negative value like 0.</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>This is the <strong>overall</strong> chance and is independent of the per-style weights: first the plugin decides whether this explosion becomes a firework at all, then it draws a style from <code>firework_chances</code>.</p>
+      </div>
+
+      <h2 id="aliases">command-aliases</h2>
+
+      <p>The plugin registers <code>/cc</code> and <code>/confetti</code> at runtime through the server's <code>CommandMap</code> rather than in <code>plugin.yml</code> — Bukkit has no way to toggle aliases declared in the plugin file after startup.</p>
+
+<pre><code>command-aliases:
+  enabled: true      <span class="tok-c"># master switch</span>
+  cc: true           <span class="tok-c"># /cc</span>
+  confetti: true     <span class="tok-c"># /confetti</span></code></pre>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Situation</th><th>Behaviour</th></tr></thead>
+          <tbody>
+            <tr><td>Alias already taken by another plugin</td><td>Skipped with a console warning; everything else keeps working</td></tr>
+            <tr><td>Alias disabled here</td><td>Silently skipped; the reason is logged when <code>debug: true</code></td></tr>
+            <tr><td><code>enabled: false</code></td><td>Neither alias is registered; only <code>/creeperconfetti</code> works</td></tr>
+            <tr><td><code>/cc reload</code></td><td>All aliases are unregistered and re-registered from the new config, so conflicts are re-checked</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>If the "already registered" warning is noise on your server, set that alias to <code>false</code>. The warning never affects functionality — it just tells you the alias is redundant.</p>
+
+      <h2 id="language">language</h2>
+
+      <p>Controls every player-facing message and the console banner.</p>
+
+<pre><code><span class="tok-c"># pick a language from the server's IP region</span>
+language: auto
+
+<span class="tok-c"># pin English</span>
+language: en_us
+
+<span class="tok-c"># legacy codes still work and are converted</span>
+language: en</code></pre>
+
+      <p>Values and the country mapping are listed under <a href="languages.html">Languages</a>. An unrecognised code logs a warning and falls back to <code>en_us</code>.</p>
+
+      <h2 id="debug">debug</h2>
+
+      <p>When enabled the plugin also logs:</p>
+
+      <ul>
+        <li>the number of styles loaded plus their full name list;</li>
+        <li>the chances after normalisation;</li>
+        <li>GeoIP details (which endpoints were queried, which country was detected, which language that maps to);</li>
+        <li>why an alias registration was skipped.</li>
+      </ul>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>Debugging "why did no firework appear" or "why is it still English" starts here — turn <code>debug</code> on and restart; the log usually answers it directly.</p>
+      </div>
+
+      <h2 id="migration">Config version &amp; migration</h2>
+
+      <p><code>config-version</code> at the top of the file drives migration. The current value is <code>3</code>. It is only checked <strong>on enable</strong> — <code>/cc reload</code> does not migrate.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">Same version → nothing happens</div>
+          <p>If the stored version is 3 or higher the migrator returns immediately without reading or writing.</p>
+        </li>
+        <li>
+          <div class="s-title">Older version → back up first</div>
+          <p>The existing file is copied to <code>backups/config-backup-&lt;yyyyMMdd-HHmmss&gt;.yml</code> before anything changes.</p>
+        </li>
+        <li>
+          <div class="s-title">Convert the old format</div>
+          <p>Version 0 (a config with no <code>config-version</code> key at all) has its old single-effect list <code>confetti_effect</code> turned into a style named <code>default</code>, keeping every colour and shape.</p>
+        </li>
+        <li>
+          <div class="s-title">Merge new keys</div>
+          <p>Keys added by newer versions are merged in. <strong>Existing values are never overwritten.</strong> The new version number is then written.</p>
+        </li>
+      </ol>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>Migration only runs at startup. If you lower <code>config-version</code> by hand, the next restart migrates again — and this time the "old" values come from your current file, which is rarely what you want. Leave the number alone.</p>
+      </div>
+
+      <h2 id="sample">Full example</h2>
+
+      <p>A complete, ready-to-use config with four preset styles:</p>
+
+<pre><code><span class="tok-c"># config version — do not edit</span>
+config-version: 3
+
+<span class="tok-c"># verbose logging</span>
+debug: false
+
+<span class="tok-c"># overall chance for a creeper to become a firework (0-100)</span>
+confetti_chance: 100
+
+<span class="tok-c"># command aliases</span>
+command-aliases:
+  enabled: true
+  cc: true
+  confetti: true
+
+<span class="tok-c"># language: auto / en_us / zh_cn / ...</span>
+language: auto
+
+<span class="tok-c"># firework styles: any number, one is picked at random per explosion</span>
+firework_styles:
+  classic:
+    type: BALL
+    flicker: true
+    trail: false
+    colors:
+      - RED
+      - YELLOW
+      - WHITE
+    fade-colors:
+      - ORANGE
+  starburst:
+    type: STAR
+    flicker: true
+    trail: false
+    colors:
+      - AQUA
+      - WHITE
+      - BLUE
+    fade-colors:
+      - PURPLE
+  rainbow:
+    type: BURST
+    flicker: false
+    trail: true
+    colors:
+      - RED
+      - ORANGE
+      - YELLOW
+      - GREEN
+      - AQUA
+    fade-colors:
+      - WHITE
+  creeper:
+    type: CREEPER
+    flicker: true
+    trail: true
+    colors:
+      - GREEN
+      - LIME
+    fade-colors:
+      - GREEN
+
+<span class="tok-c"># per-style weights, normalised to 100%</span>
+firework_chances:
+  classic: 40
+  starburst: 30
+  rainbow: 20
+  creeper: 10</code></pre>
+
+      <h3 id="rewrite">After using commands, the file looks different</h3>
+
+      <p>Once you change styles through <code>/cc effect add</code>, <code>/cc effect chance</code> or the GUI, the plugin rewrites the <code>firework_styles</code> and <code>firework_chances</code> sections. Styles are then stored in Bukkit's serialised form:</p>
+
+<pre><code>firework_styles:
+  classic:
+  - ==: org.bukkit.FireworkEffect
+    type: BALL
+    flicker: true
+    trail: false
+    colors:
+    - ==: org.bukkit.Color
+      RGB: 16711680
+    fade-colors:
+    - ==: org.bukkit.Color
+      RGB: 16755200</code></pre>
+
+      <p>This is normal, not corruption — it loads fine, it is just unpleasant to hand-edit. To get the readable form back:</p>
+
+      <ul>
+        <li>run <code>/cc effect reset</code> to restore the four built-in styles (still serialised);</li>
+        <li>or stop the server and replace the whole <code>firework_styles</code> block with the hand-written example above, then start again.</li>
+      </ul>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>Suggested workflow: capture styles in game with <code>/cc effect add</code> or the GUI (it reads the firework in your hand), and only touch the YAML for bulk edits or version control.</p>
+      </div>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>配置文件</h1>
+      <p class="lead">配置文件位于 <code>plugins/CreeperConfettiPro/config.yml</code>。所有键都可以通过 <code>/cc</code> 系列指令修改，手改之后执行 <code>/cc reload</code> 即可生效。</p>
+
+      <h2 id="structure">配置结构总览</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>键</th><th>类型</th><th>默认值</th><th>作用</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>config-version</code></td><td>整数</td><td><code>3</code></td><td>配置版本标识，用于自动迁移，<strong>不要手改</strong></td></tr>
+            <tr><td><code>debug</code></td><td>布尔</td><td><code>false</code></td><td>输出样式列表、概率、GeoIP 探测等详细日志</td></tr>
+            <tr><td><code>confetti_chance</code></td><td>0–100</td><td><code>100</code></td><td>苦力怕变成烟花的整体概率</td></tr>
+            <tr><td><code>command-aliases</code></td><td>节点</td><td>全开</td><td><code>/cc</code> 与 <code>/confetti</code> 别名的开关</td></tr>
+            <tr><td><code>language</code></td><td>字符串</td><td><code>auto</code></td><td>插件语言，<code>auto</code> 或语言代码</td></tr>
+            <tr><td><code>firework_styles</code></td><td>节点</td><td>4 个内置样式</td><td>烟花样式定义</td></tr>
+            <tr><td><code>firework_chances</code></td><td>节点</td><td>40/30/20/10</td><td>各样式权重，加载时自动归一化为 100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="chance">confetti_chance</h2>
+
+      <p>整体触发概率，取值 0 到 100，支持小数。判定方式是每次苦力怕爆炸时生成一个 <code>0–100</code> 的随机数，小于该值才转为烟花。</p>
+
+<pre><code><span class="tok-c"># 每一只苦力怕都变成烟花</span>
+confetti_chance: 100
+
+<span class="tok-c"># 大约四分之一</span>
+confetti_chance: 25
+
+<span class="tok-c"># 万分之一，节日彩蛋</span>
+confetti_chance: 0.01</code></pre>
+
+      <p>游戏内等价指令：<code>/cc chance 25</code>。指令会把值限制在 0–100，超出范围直接拒绝并提示；手改配置文件则不做校验，写 <code>150</code> 等价于 100，写负数等价于 0。</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>这个概率是<strong>整体</strong>概率，与单个样式的权重是两个维度：先判断这次要不要变烟花，命中后再按 <code>firework_chances</code> 抽具体样式。</p>
+      </div>
+
+      <h2 id="aliases">command-aliases</h2>
+
+      <p>插件会在启用时通过服务端 <code>CommandMap</code> 动态注册 <code>/cc</code> 与 <code>/confetti</code> 两个别名，而不是写在 <code>plugin.yml</code> 里——因为 Bukkit 没有办法在运行时开关 plugin.yml 中声明的别名。</p>
+
+<pre><code>command-aliases:
+  enabled: true      <span class="tok-c"># 总开关</span>
+  cc: true           <span class="tok-c"># /cc</span>
+  confetti: true     <span class="tok-c"># /confetti</span></code></pre>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>场景</th><th>行为</th></tr></thead>
+          <tbody>
+            <tr><td>别名已被其他插件占用</td><td>跳过该别名，控制台输出一条警告，插件其余功能不受影响</td></tr>
+            <tr><td>别名被本插件关闭</td><td>静默跳过；<code>debug: true</code> 时会打印原因</td></tr>
+            <tr><td>关闭 <code>enabled</code></td><td>两个别名都不注册，只能用 <code>/creeperconfetti</code></td></tr>
+            <tr><td>执行 <code>/cc reload</code></td><td>先注销全部别名再按新配置重新注册，冲突会被重新检测</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>不想看到「已被占用」的警告，就把对应项设为 <code>false</code>：警告本身不影响功能，只是提示你该关掉它了。</p>
+
+      <h2 id="language">language</h2>
+
+      <p>控制插件所有玩家可见消息与控制台文案的语言。</p>
+
+<pre><code><span class="tok-c"># 根据服务器 IP 所在地区自动选择</span>
+language: auto
+
+<span class="tok-c"># 固定简体中文</span>
+language: zh_cn
+
+<span class="tok-c"># 旧写法仍然可用，会自动转换</span>
+language: zh</code></pre>
+
+      <p>可选值与地区映射规则见 <a href="languages.html">多语言</a>。填了无法识别的代码时，插件会打一条警告并回退到 <code>en_us</code>。</p>
+
+      <h2 id="debug">debug</h2>
+
+      <p>开启后额外输出：</p>
+
+      <ul>
+        <li>启动时加载到的样式数量与完整名称列表；</li>
+        <li>归一化之后的各样式概率；</li>
+        <li>GeoIP 探测明细（查询了哪些接口、最终识别到的国家代码 → 语言）；</li>
+        <li>别名注册被跳过时的具体原因。</li>
+      </ul>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>排查「为什么没触发烟花」「为什么语言是英文」时，第一件事就是把 <code>debug</code> 打开重启一次，日志基本能直接给出答案。</p>
+      </div>
+
+      <h2 id="migration">配置版本与自动迁移</h2>
+
+      <p>配置文件顶部的 <code>config-version</code> 是迁移依据，当前版本为 <code>3</code>。插件只在<strong>启用时</strong>检查它，<code>/cc reload</code> 不会触发迁移。</p>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">版本一致 → 什么都不做</div>
+          <p>文件里记录的版本大于等于 3 时直接返回，不读也不写。</p>
+        </li>
+        <li>
+          <div class="s-title">版本较旧 → 先备份</div>
+          <p>把现有文件复制到 <code>backups/config-backup-&lt;yyyyMMdd-HHmmss&gt;.yml</code>，出问题随时可以还原。</p>
+        </li>
+        <li>
+          <div class="s-title">转换旧格式</div>
+          <p>版本为 0（即完全没有 <code>config-version</code> 键的老配置）时，会把旧的单效果列表 <code>confetti_effect</code> 转成名为 <code>default</code> 的样式，原有的颜色与形状全部保留。</p>
+        </li>
+        <li>
+          <div class="s-title">补齐新增字段</div>
+          <p>新版增加的键会被合并进文件，<strong>已存在的值一律不覆盖</strong>，然后写入新版本号。</p>
+        </li>
+      </ol>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>迁移只发生在启动阶段。如果你手动把 <code>config-version</code> 改小，重启后会被再迁移一次，而这次「旧值」来自你当前的文件，结果可能不是你想要的。没有特殊需求不要动这个数字。</p>
+      </div>
+
+      <h2 id="sample">完整示例</h2>
+
+      <p>下面是一份可直接使用的完整配置，含四套预设样式：</p>
+
+<pre><code><span class="tok-c"># 配置版本，请勿手改</span>
+config-version: 3
+
+<span class="tok-c"># 调试日志</span>
+debug: false
+
+<span class="tok-c"># 苦力怕变烟花的整体概率（0-100）</span>
+confetti_chance: 100
+
+<span class="tok-c"># 指令别名</span>
+command-aliases:
+  enabled: true
+  cc: true
+  confetti: true
+
+<span class="tok-c"># 语言：auto / zh_cn / en_us / ...</span>
+language: auto
+
+<span class="tok-c"># 烟花样式：数量不限，爆炸时随机抽一种</span>
+firework_styles:
+  classic:
+    type: BALL
+    flicker: true
+    trail: false
+    colors:
+      - RED
+      - YELLOW
+      - WHITE
+    fade-colors:
+      - ORANGE
+  starburst:
+    type: STAR
+    flicker: true
+    trail: false
+    colors:
+      - AQUA
+      - WHITE
+      - BLUE
+    fade-colors:
+      - PURPLE
+  rainbow:
+    type: BURST
+    flicker: false
+    trail: true
+    colors:
+      - RED
+      - ORANGE
+      - YELLOW
+      - GREEN
+      - AQUA
+    fade-colors:
+      - WHITE
+  creeper:
+    type: CREEPER
+    flicker: true
+    trail: true
+    colors:
+      - GREEN
+      - LIME
+    fade-colors:
+      - GREEN
+
+<span class="tok-c"># 各样式权重，自动归一化为 100%</span>
+firework_chances:
+  classic: 40
+  starburst: 30
+  rainbow: 20
+  creeper: 10</code></pre>
+
+      <h3 id="rewrite">用指令改过样式后，配置会长得不一样</h3>
+
+      <p>通过 <code>/cc effect add</code>、<code>/cc effect chance</code> 或图形界面做过修改后，插件会重写 <code>firework_styles</code> 与 <code>firework_chances</code> 两段。重写后的样式是 Bukkit 的序列化格式，看起来像这样：</p>
+
+<pre><code>firework_styles:
+  classic:
+  - ==: org.bukkit.FireworkEffect
+    type: BALL
+    flicker: true
+    trail: false
+    colors:
+    - ==: org.bukkit.Color
+      RGB: 16711680
+    fade-colors:
+    - ==: org.bukkit.Color
+      RGB: 16755200</code></pre>
+
+      <p>这是正常现象，不是配置损坏。这种格式依然可以正常加载，但手写起来很别扭。想回到可读的手写格式，有两种办法：</p>
+
+      <ul>
+        <li>执行 <code>/cc effect reset</code> 恢复内置四样式（同样是序列化格式）；</li>
+        <li>停服后手动把 <code>firework_styles</code> 整段替换成上面的手写示例，再启动。</li>
+      </ul>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>建议的工作方式：样式用游戏内指令或 GUI 采集（<code>/cc effect add</code> 直接读取你手持的烟花），只有需要批量调整或版本管理时才手改 YAML。</p>
+      </div>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

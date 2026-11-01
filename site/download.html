@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download · CreeperConfettiPro</title>
+<meta name="description" content="Download the latest CreeperConfettiPro release. The page pulls the newest GitHub release live and links the Bukkit and Folia jars.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="download">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Download</h1>
+      <p class="lead">This page asks GitHub for the newest published release every time it loads, so the links below are never out of date. Pick the build that matches your server, then follow the <a href="install.html">installation steps</a>.</p>
+
+      <h2 id="downloads">Latest release</h2>
+
+      <div class="dl-meta" id="dlMeta"></div>
+      <div class="dl-grid" id="dlGrid"></div>
+
+      <h2 id="which">Which build do I need?</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Server</th><th>Build</th><th>Java</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Spigot, Paper, Purpur, Leaves, any Bukkit fork</td>
+              <td><code>…-bukkit.jar</code></td>
+              <td>8+</td>
+            </tr>
+            <tr>
+              <td>Folia</td>
+              <td><code>…-folia.jar</code></td>
+              <td>17+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The two jars are not interchangeable. The Folia build declares <code>folia-supported: true</code> and uses region schedulers; the Bukkit build uses the classic scheduler that Folia does not ship. Installing the wrong one fails at startup rather than silently misbehaving — see <a href="folia.html#why">Bukkit &amp; Folia builds</a> for the details.</p>
+
+      <h2 id="how">After downloading</h2>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">Stop the server</div>
+          <p>Do not hot-swap jars while the server is running.</p>
+        </li>
+        <li>
+          <div class="s-title">Drop the jar into <code>plugins/</code></div>
+          <p>Leave it zipped — the server loads the jar as-is.</p>
+        </li>
+        <li>
+          <div class="s-title">Start the server</div>
+          <p>The first start writes <code>plugins/CreeperConfettiPro/config.yml</code> and all 18 language files.</p>
+        </li>
+        <li>
+          <div class="s-title">Tune it</div>
+          <p><code>/cc gui</code> in game, or edit the config and run <code>/cc reload</code>.</p>
+        </li>
+      </ol>
+
+      <h2 id="notes">Release notes</h2>
+
+      <div class="release-notes" id="dlNotes"></div>
+
+      <p class="dl-note">Everything is also listed on <a href="https://github.com/Hi-PolarBear/CreeperConfettiPro/releases" target="_blank" rel="noopener">github.com/Hi-PolarBear/CreeperConfettiPro/releases</a>, including older versions.</p>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>下载</h1>
+      <p class="lead">每次打开这个页面，它都会向 GitHub 请求当前最新发布的版本，所以下面的链接永远不会过期。选好与你服务端匹配的分支，然后按 <a href="install.html">安装步骤</a> 操作即可。</p>
+
+      <h2 id="downloads">最新发行版</h2>
+
+      <div class="dl-meta" id="dlMeta"></div>
+      <div class="dl-grid" id="dlGrid"></div>
+
+      <h2 id="which">该选哪个版本？</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>服务端</th><th>版本</th><th>Java</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Spigot、Paper、Purpur、Leaves 等 Bukkit 系</td>
+              <td><code>…-bukkit.jar</code></td>
+              <td>8+</td>
+            </tr>
+            <tr>
+              <td>Folia</td>
+              <td><code>…-folia.jar</code></td>
+              <td>17+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>两个 jar 不能互换。Folia 版本声明了 <code>folia-supported: true</code> 并使用区域调度器；Bukkit 版本用的是 Folia 根本不提供的那套经典调度器。装错了会在启动时直接失败，而不是悄悄出问题——细节见 <a href="folia.html#why">Bukkit 与 Folia 双分支</a>。</p>
+
+      <h2 id="how">下载之后</h2>
+
+      <ol class="steps">
+        <li>
+          <div class="s-title">停止服务端</div>
+          <p>不要在服务端运行时热替换 jar。</p>
+        </li>
+        <li>
+          <div class="s-title">把 jar 放进 <code>plugins/</code></div>
+          <p>保持压缩包原样，服务端会直接加载 jar。</p>
+        </li>
+        <li>
+          <div class="s-title">启动服务端</div>
+          <p>首次启动会生成 <code>plugins/CreeperConfettiPro/config.yml</code> 与全部 18 个语言文件。</p>
+        </li>
+        <li>
+          <div class="s-title">开始调整</div>
+          <p>游戏内用 <code>/cc gui</code>，或者改配置后执行 <code>/cc reload</code>。</p>
+        </li>
+      </ol>
+
+      <h2 id="notes">发行说明</h2>
+
+      <div class="release-notes" id="dlNotes"></div>
+
+      <p class="dl-note">所有版本（含历史版本）也可以直接在 <a href="https://github.com/Hi-PolarBear/CreeperConfettiPro/releases" target="_blank" rel="noopener">github.com/Hi-PolarBear/CreeperConfettiPro/releases</a> 查看。</p>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

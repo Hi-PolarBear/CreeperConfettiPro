@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build &amp; extend · CreeperConfettiPro</title>
+<meta name="description" content="Building CreeperConfettiPro from source: Maven commands, dependencies and shading, project layout, key classes and common extension points.">
+<link rel="icon" href="https://cdn.modrinth.com/data/zOtyOPVB/bef4cc1825b9c005b7df620b4ca0ba039c67a660.jpeg">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var q=new URLSearchParams(location.search).get("theme");var m=q||localStorage.getItem("cc-theme-mode")||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}</script>
+</head>
+<body data-page="build">
+<div class="bg-fx"></div>
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ================= English ================= -->
+    <article class="content lang-block" data-lang="en">
+
+      <h1>Build &amp; extend</h1>
+      <p class="lead">Both projects are plain Maven builds — one command produces the jar. Below: toolchain, artifacts, project layout and the usual extension points.</p>
+
+      <h2 id="build">Building from source</h2>
+
+      <h3 id="prereq">Toolchain</h3>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Project</th><th>JDK</th><th>Maven</th><th>Compile target</th></tr></thead>
+          <tbody>
+            <tr><td>bukkit</td><td>JDK 8 or newer</td><td>3.6+</td><td><code>--release 8</code></td></tr>
+            <tr><td>folia</td><td><strong>JDK 17 or newer</strong></td><td>3.6+</td><td><code>--release 17</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="command">Commands</h3>
+
+      <p><code>defaultGoal</code> is already set to <code>clean package</code>, so plain <code>mvn</code> is enough:</p>
+
+<pre><code><span class="tok-c"># Bukkit build</span>
+cd CreeperConfettiPro-bukkit
+mvn clean package
+
+<span class="tok-c"># Folia build</span>
+cd CreeperConfettiPro-folia
+mvn clean package</code></pre>
+
+      <p>Artifacts land in each project's <code>target/</code>:</p>
+
+<pre><code>CreeperConfettiPro-4.1.0-bukkit.jar          <span class="tok-c"># the plugin, ~850 KB</span>
+original-CreeperConfettiPro-4.1.0-bukkit.jar <span class="tok-c"># pre-shade thin jar — do not use</span></code></pre>
+
+      <p>The <code>original-</code> prefix marks the shade plugin's intermediate output. It has no bStats classes and fails on enable with <code>NoClassDefFoundError</code>.</p>
+
+      <h3 id="deps">Dependencies &amp; shading</h3>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Dependency</th><th>Version</th><th>Scope</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>spigot-api</code></td><td>1.9.4-R0.1-SNAPSHOT</td><td>provided</td><td>Bukkit build only; compile-time</td></tr>
+            <tr><td><code>folia-api</code></td><td>1.19.4-R0.1-SNAPSHOT</td><td>provided</td><td>Folia build only</td></tr>
+            <tr><td><code>bstats-bukkit</code></td><td>3.1.0</td><td>compile</td><td>Shaded in, package relocated to avoid clashes</td></tr>
+            <tr><td><code>commons-lang3</code></td><td>3.18.0</td><td>compile</td><td>Same; bStats' own copy is excluded</td></tr>
+            <tr><td><code>annotations</code></td><td>24.1.0</td><td>provided</td><td>JetBrains annotations</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>bStats is relocated by maven-shade-plugin, with a different prefix per build:</p>
+
+<pre><code><span class="tok-c">&lt;!-- bukkit --&gt;</span>
+&lt;relocation&gt;
+  &lt;pattern&gt;org.bstats&lt;/pattern&gt;
+  &lt;shadedPattern&gt;me.cookie.creeperconfetti.libs.org.bstats&lt;/shadedPattern&gt;
+&lt;/relocation&gt;
+
+<span class="tok-c">&lt;!-- folia --&gt;</span>
+&lt;relocation&gt;
+  &lt;pattern&gt;org.bstats&lt;/pattern&gt;
+  &lt;shadedPattern&gt;CreeperConfetti.example.creeperConfettiPro.libs.org.bstats&lt;/shadedPattern&gt;
+&lt;/relocation&gt;</code></pre>
+
+      <p>The build also writes <code>dependency-reduced-pom.xml</code> to the project root. That is normal shade behaviour; usually you ignore it in version control.</p>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>Both poms enable resource filtering (<code>&lt;filtering&gt;true&lt;/filtering&gt;</code>), so <code>${...}</code> inside <code>src/main/resources</code> is substituted by Maven. Escape it or avoid the pattern when writing language files.</p>
+      </div>
+
+      <h2 id="structure">Project structure</h2>
+
+<pre><code>CreeperConfettiPro-bukkit/
+├── pom.xml
+├── src/main/java/creeperconfetti/
+│   ├── CreeperConfettiPro.java          <span class="tok-c"># main class / enable flow</span>
+│   ├── ConfigMigrator.java              <span class="tok-c"># version migration + backups</span>
+│   ├── LanguageManager.java             <span class="tok-c"># loading, detection, message formatting</span>
+│   ├── Metrics.java                     <span class="tok-c"># bStats wrapper (pluginId 29666)</span>
+│   ├── commands/
+│   │   ├── CreeperConfettiCommand.java  <span class="tok-c"># subcommand dispatcher</span>
+│   │   ├── BaseSubCommand.java          <span class="tok-c"># subcommand base class</span>
+│   │   ├── CommandAliasManager.java     <span class="tok-c"># reflective /cc and /confetti</span>
+│   │   └── sub/                         <span class="tok-c"># the six subcommands</span>
+│   ├── effects/
+│   │   ├── FireworkStyleManager.java    <span class="tok-c"># styles + chances</span>
+│   │   ├── FireworkEffectParser.java    <span class="tok-c"># colour / effect parsing</span>
+│   │   └── FireworkUtil.java            <span class="tok-c"># spawning, reading held items</span>
+│   ├── events/CreeperExplodeListener.java
+│   ├── gui/                             <span class="tok-c"># list page, edit page, base</span>
+│   └── util/
+│       ├── GeoIpResolver.java           <span class="tok-c"># parallel country lookup</span>
+│       └── Schedulers.java              <span class="tok-c"># Folia build only</span>
+└── src/main/resources/
+    ├── plugin.yml
+    ├── config.yml
+    └── languages/                       <span class="tok-c"># 18 files</span></code></pre>
+
+      <h2 id="classes">Key classes</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Class</th><th>Responsibility</th><th>Risk when changing</th></tr></thead>
+          <tbody>
+            <tr><td><code>CreeperConfettiPro</code></td><td>Enable order: save config → migrate → load styles → register command and aliases → init language → register listeners → start bStats</td><td>High — order matters</td></tr>
+            <tr><td><code>CreeperExplodeListener</code></td><td>The only event entry point; decides "explode" vs "firework"</td><td>High — defines the gameplay</td></tr>
+            <tr><td><code>FireworkStyleManager</code></td><td>Style table, weight normalisation, weighted random, persistence</td><td>Medium — keep the 100% invariant</td></tr>
+            <tr><td><code>FireworkEffectParser</code></td><td>Turns YAML / serialised objects / maps into <code>FireworkEffect</code></td><td>Medium — new colour formats go here</td></tr>
+            <tr><td><code>LanguageManager</code></td><td>Copies language files, detects language, formats messages</td><td>Medium — singleton, mind thread safety</td></tr>
+            <tr><td><code>ConfigMigrator</code></td><td>Version check, backup, legacy conversion, key merging</td><td>Medium — bump the version when the schema changes</td></tr>
+            <tr><td><code>CommandAliasManager</code></td><td>Reflective <code>CommandMap</code> alias registration</td><td>Medium — the most version-sensitive part</td></tr>
+            <tr><td><code>GeoIpResolver</code></td><td>Six endpoints in parallel, first valid answer wins</td><td>Low</td></tr>
+            <tr><td><code>Schedulers</code> (Folia)</td><td>Every scheduling entry point</td><td>High — a mistake crashes the region thread</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="extend">Extension points</h2>
+
+      <h3 id="add-command">Adding a subcommand</h3>
+
+      <ol>
+        <li>Extend <code>BaseSubCommand</code> in <code>commands/sub/</code> and implement <code>getName()</code>, <code>getPermission()</code>, <code>getDescriptionKey()</code> and <code>execute()</code>;</li>
+        <li>call <code>register(new YourCommand())</code> in the <code>CreeperConfettiCommand</code> constructor;</li>
+        <li>add the permission node to <code>plugin.yml</code> and attach it to the <code>creeperconfetti.command</code> children;</li>
+        <li>add <code>help.sub.xxx</code> plus your message keys to all 18 language files (missing keys fall back to English).</li>
+      </ol>
+
+      <h3 id="keep-damage">Keep the damage, drop the crater</h3>
+
+      <p>The default cancels the whole explosion. If you want "damage and knockback, intact terrain", do not call <code>setCancelled</code> — clear the block list and spawn the firework instead:</p>
+
+<pre><code>@EventHandler
+public void onCreeperExplode(EntityExplodeEvent event) {
+    if (event.getEntity().getType() != EntityType.CREEPER) return;
+
+    Creeper creeper = (Creeper) event.getEntity();
+    Location location = creeper.getLocation().add(0, 1, 0);
+
+    <span class="tok-c">// only clear the affected blocks, keep damage and knockback</span>
+    event.blockList().clear();
+
+    FireworkUtil.spawnAndDetonate(plugin, location,
+            plugin.getFireworkStyleManager().getRandomEffects(), 0);
+}</code></pre>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>With this approach the creeper is not removed, so the firework appears alongside the explosion. To remove it as well, call <code>creeper.remove()</code> after the event — and on the Folia build wrap it in <code>Schedulers.runOnEntity</code>.</p>
+      </div>
+
+      <h3 id="world-filter">Restrict to specific worlds</h3>
+
+      <p>The world name is right there in the event; one guard is enough (there is no built-in switch for this):</p>
+
+<pre><code>if (!creeper.getWorld().getName().equals("world")) return;</code></pre>
+
+      <h3 id="new-color">Supporting another colour format</h3>
+
+      <p>Parsing lives in <code>FireworkEffectParser.parseColor()</code>, which dispatches by type: <code>Color</code>, <code>Number</code>, <code>String</code>, <code>ConfigurationSection</code>, <code>Map</code>. A new format is one extra branch; nothing else has to change.</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>If you change the config schema, increment <code>ConfigMigrator.CURRENT_VERSION</code> and add the conversion in <code>migrate()</code> — otherwise existing users end up missing fields after an update.</p>
+      </div>
+
+    </article>
+
+    <!-- ================= 中文 ================= -->
+    <article class="content lang-block" data-lang="zh">
+
+      <h1>构建与二次开发</h1>
+      <p class="lead">两个项目都是标准 Maven 工程，一个命令就能出包。下面说明构建环境、产物、项目结构与常用扩展点。</p>
+
+      <h2 id="build">从源码构建</h2>
+
+      <h3 id="prereq">环境准备</h3>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>项目</th><th>JDK</th><th>Maven</th><th>编译目标</th></tr></thead>
+          <tbody>
+            <tr><td>bukkit</td><td>JDK 8 及以上</td><td>3.6+</td><td><code>--release 8</code></td></tr>
+            <tr><td>folia</td><td><strong>JDK 17 及以上</strong></td><td>3.6+</td><td><code>--release 17</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="command">构建命令</h3>
+
+      <p><code>pom.xml</code> 里已把 <code>defaultGoal</code> 设为 <code>clean package</code>，所以直接 <code>mvn</code> 即可：</p>
+
+<pre><code><span class="tok-c"># Bukkit 分支</span>
+cd CreeperConfettiPro-bukkit
+mvn clean package
+
+<span class="tok-c"># Folia 分支</span>
+cd CreeperConfettiPro-folia
+mvn clean package</code></pre>
+
+      <p>产物在各自项目的 <code>target/</code> 下：</p>
+
+<pre><code>CreeperConfettiPro-4.1.0-bukkit.jar          <span class="tok-c"># 最终插件，约 850 KB</span>
+original-CreeperConfettiPro-4.1.0-bukkit.jar <span class="tok-c"># shade 之前的瘦包，不要用</span></code></pre>
+
+      <p>带 <code>original-</code> 前缀的是 shade 插件的中间产物，缺少 bStats 依赖，装进服务端会在启用时报 <code>NoClassDefFoundError</code>。</p>
+
+      <h3 id="deps">依赖与打包方式</h3>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>依赖</th><th>版本</th><th>scope</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>spigot-api</code></td><td>1.9.4-R0.1-SNAPSHOT</td><td>provided</td><td>仅 Bukkit 分支；编译期使用，不打包</td></tr>
+            <tr><td><code>folia-api</code></td><td>1.19.4-R0.1-SNAPSHOT</td><td>provided</td><td>仅 Folia 分支</td></tr>
+            <tr><td><code>bstats-bukkit</code></td><td>3.1.0</td><td>compile</td><td>被打进 jar，并重定位包名避免冲突</td></tr>
+            <tr><td><code>commons-lang3</code></td><td>3.18.0</td><td>compile</td><td>同上；已排除 bStats 自带的旧版本</td></tr>
+            <tr><td><code>annotations</code></td><td>24.1.0</td><td>provided</td><td>JetBrains 注解，编译期使用</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>bStats 通过 maven-shade-plugin 重定位，两个分支的重定位前缀不同：</p>
+
+<pre><code><span class="tok-c">&lt;!-- bukkit --&gt;</span>
+&lt;relocation&gt;
+  &lt;pattern&gt;org.bstats&lt;/pattern&gt;
+  &lt;shadedPattern&gt;me.cookie.creeperconfetti.libs.org.bstats&lt;/shadedPattern&gt;
+&lt;/relocation&gt;
+
+<span class="tok-c">&lt;!-- folia --&gt;</span>
+&lt;relocation&gt;
+  &lt;pattern&gt;org.bstats&lt;/pattern&gt;
+  &lt;shadedPattern&gt;CreeperConfetti.example.creeperConfettiPro.libs.org.bstats&lt;/shadedPattern&gt;
+&lt;/relocation&gt;</code></pre>
+
+      <p>构建时 Maven 还会在项目根目录生成 <code>dependency-reduced-pom.xml</code>，这是 shade 插件的正常行为，提交代码时通常忽略即可。</p>
+
+      <div class="callout warn reveal">
+        <span class="co-icon">!</span>
+        <p>两个 pom 都开启了资源过滤（<code>&lt;filtering&gt;true&lt;/filtering&gt;</code>）。这意味着 <code>src/main/resources</code> 下的文件里出现 <code>${...}</code> 会被 Maven 尝试替换。写语言文件时如果要用到美元符号加大括号，需要转义或改用其它写法。</p>
+      </div>
+
+      <h2 id="structure">项目结构</h2>
+
+<pre><code>CreeperConfettiPro-bukkit/
+├── pom.xml
+├── src/main/java/creeperconfetti/
+│   ├── CreeperConfettiPro.java          <span class="tok-c"># 主类 / 启用流程</span>
+│   ├── ConfigMigrator.java              <span class="tok-c"># 配置版本迁移与备份</span>
+│   ├── LanguageManager.java             <span class="tok-c"># 语言加载、检测、消息格式化</span>
+│   ├── Metrics.java                     <span class="tok-c"># bStats 封装（pluginId 29666）</span>
+│   ├── commands/
+│   │   ├── CreeperConfettiCommand.java  <span class="tok-c"># 子命令分发器</span>
+│   │   ├── BaseSubCommand.java          <span class="tok-c"># 子命令基类</span>
+│   │   ├── CommandAliasManager.java     <span class="tok-c"># 反射注册 /cc 与 /confetti</span>
+│   │   └── sub/                         <span class="tok-c"># 六个子命令实现</span>
+│   ├── effects/
+│   │   ├── FireworkStyleManager.java    <span class="tok-c"># 样式与概率管理</span>
+│   │   ├── FireworkEffectParser.java    <span class="tok-c"># 颜色 / 效果解析</span>
+│   │   └── FireworkUtil.java            <span class="tok-c"># 生成烟花、读手持物品</span>
+│   ├── events/CreeperExplodeListener.java
+│   ├── gui/                             <span class="tok-c"># 列表页 / 编辑页 / 基类</span>
+│   └── util/
+│       ├── GeoIpResolver.java           <span class="tok-c"># 并行查询国家代码</span>
+│       └── Schedulers.java              <span class="tok-c"># 仅 Folia 分支</span>
+└── src/main/resources/
+    ├── plugin.yml
+    ├── config.yml
+    └── languages/                       <span class="tok-c"># 18 个语言文件</span></code></pre>
+
+      <h2 id="classes">关键类说明</h2>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>类</th><th>职责</th><th>改动风险</th></tr></thead>
+          <tbody>
+            <tr><td><code>CreeperConfettiPro</code></td><td>启用顺序：存配置 → 迁移 → 载样式 → 注册指令与别名 → 初始化语言 → 注册监听器 → 启动 bStats</td><td>高，注意顺序依赖</td></tr>
+            <tr><td><code>CreeperExplodeListener</code></td><td>唯一的事件入口，决定「炸」还是「放烟花」</td><td>高，改动直接影响玩法</td></tr>
+            <tr><td><code>FireworkStyleManager</code></td><td>样式表、权重归一化、加权随机、持久化</td><td>中，注意保持总和 100% 的不变量</td></tr>
+            <tr><td><code>FireworkEffectParser</code></td><td>把 YAML / 序列化对象 / Map 解析成 <code>FireworkEffect</code></td><td>中，新增颜色写法在这里加</td></tr>
+            <tr><td><code>LanguageManager</code></td><td>复制语言文件、检测语言、消息查表与占位符替换</td><td>中，单例，注意线程安全</td></tr>
+            <tr><td><code>ConfigMigrator</code></td><td>版本比对、备份、旧格式转换、补齐新键</td><td>中，改配置结构时必须同步版本号</td></tr>
+            <tr><td><code>CommandAliasManager</code></td><td>通过反射拿 <code>CommandMap</code> 动态注册别名</td><td>中，跨版本兼容最脆弱的地方</td></tr>
+            <tr><td><code>GeoIpResolver</code></td><td>并发查询 6 个接口，第一个有效结果胜出</td><td>低</td></tr>
+            <tr><td><code>Schedulers</code>（Folia）</td><td>全部调度入口</td><td>高，改错会直接崩区域线程</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="extend">扩展点</h2>
+
+      <h3 id="add-command">新增一个子命令</h3>
+
+      <ol>
+        <li>在 <code>commands/sub/</code> 下继承 <code>BaseSubCommand</code>，实现 <code>getName()</code>、<code>getPermission()</code>、<code>getDescriptionKey()</code>、<code>execute()</code>；</li>
+        <li>在 <code>CreeperConfettiCommand</code> 构造函数里 <code>register(new YourCommand())</code>；</li>
+        <li>在 <code>plugin.yml</code> 的 <code>permissions</code> 下加权限节点，并挂到 <code>creeperconfetti.command</code> 的 children；</li>
+        <li>在 18 个语言文件里补 <code>help.sub.xxx</code> 与提示文案（缺了会回退英文）。</li>
+      </ol>
+
+      <h3 id="keep-damage">保留伤害，只去掉方块破坏</h3>
+
+      <p>默认实现是取消整个爆炸。如果你想要「有伤害、有击退，但地面完好」，不要 <code>setCancelled</code>，改为清空方块列表并额外生成烟花：</p>
+
+<pre><code>@EventHandler
+public void onCreeperExplode(EntityExplodeEvent event) {
+    if (event.getEntity().getType() != EntityType.CREEPER) return;
+
+    Creeper creeper = (Creeper) event.getEntity();
+    Location location = creeper.getLocation().add(0, 1, 0);
+
+    <span class="tok-c">// 只清空被破坏的方块，保留伤害与击退</span>
+    event.blockList().clear();
+
+    FireworkUtil.spawnAndDetonate(plugin, location,
+            plugin.getFireworkStyleManager().getRandomEffects(), 0);
+}</code></pre>
+
+      <div class="callout note reveal">
+        <span class="co-icon">i</span>
+        <p>这种方式下苦力怕不会被移除，烟花会和爆炸同时出现。想彻底不留苦力怕，仍然需要 <code>creeper.remove()</code>，但要放在事件处理之后——Folia 分支请用 <code>Schedulers.runOnEntity</code> 包一层。</p>
+      </div>
+
+      <h3 id="world-filter">只对指定世界生效</h3>
+
+      <p>事件里能直接拿到世界名，加一行判断即可（当前版本没有内置这个开关）：</p>
+
+<pre><code>if (!creeper.getWorld().getName().equals("world")) return;</code></pre>
+
+      <h3 id="new-color">支持新的颜色写法</h3>
+
+      <p>颜色解析集中在 <code>FireworkEffectParser.parseColor()</code>，它按类型分派：<code>Color</code>、<code>Number</code>、<code>String</code>、<code>ConfigurationSection</code>、<code>Map</code>。新增一种写法只需要在这个方法里加一个分支，其它代码不用动。</p>
+
+      <div class="callout tip reveal">
+        <span class="co-icon">v</span>
+        <p>改完配置结构记得把 <code>ConfigMigrator.CURRENT_VERSION</code> 加 1，并在 <code>migrate()</code> 里补上转换逻辑，否则老用户升级后会缺字段。</p>
+      </div>
+
+    </article>
+
+    <nav class="pager" id="pager"></nav>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
