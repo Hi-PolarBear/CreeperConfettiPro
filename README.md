@@ -6,6 +6,10 @@ As a Minecraft server administrator, have you ever been disappointed that the cl
 
 **CreeperConfettiPro** — an upgraded branch of CreeperConfetti, built for high-version servers, bringing the classic fun into the modern era!
 
+# Wiki 
+
+https://hi-polarbear.github.io/CreeperConfettiPro
+
 ## Feel free to join our Discord community server:
 
 [![Discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_vector.svg)](https://discord.gg/DajmZMmEbx)
